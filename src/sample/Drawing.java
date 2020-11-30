@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Drawing {
-    private double x = 100;
-    private double y = 100;
+    private double x = 125;
+    private double y = 125;
     private List<PathElement> objects = new ArrayList<>();
     private Path path = new Path();
     private Circle circle;
