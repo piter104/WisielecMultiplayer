@@ -42,7 +42,7 @@ public class Drawing {
     }
 
     public void draw(int number) {
-        for (int i = 0; i < number; i++) {
+        for (int i = 0; i <= number; i++) {
             if (objects.get(i) != null) {
                 this.path.getElements().add(objects.get(i));
                 if (objects.get(i) instanceof MoveTo) {
