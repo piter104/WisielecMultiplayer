@@ -36,7 +36,8 @@ public class Game {
         group = new Group(gameRoot);
 
         alert.setTitle("Koniec Gry");
-        alert.setHeaderText("Przegrałeś kolego");
+        alert.setHeaderText(null);
+        alert.setContentText("Przegrałeś kolego");
 
         pathTransition.setPath(drawing.getPath());
         group.getChildren().add(drawing.getPath());
