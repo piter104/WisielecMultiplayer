@@ -21,7 +21,7 @@ public class Game {
 
     private int number = 0;
     private String letters = "";
-    private final String word = "Konczak";
+    private final String word = "";
     Circle circle;
 
     Group group;
@@ -43,6 +43,8 @@ public class Game {
         group.getChildren().add(drawing.getPath());
         group.getChildren().add(drawing.getCircle());
 
+        // trzeba dopisać jeszcze kreski hasła
+
         stage.setScene(new Scene(group));
         stage.show();
     }
@@ -51,10 +53,11 @@ public class Game {
         if (lettersIn.getText().length() == 1) {
             if (letters.length() != 0) {
                 letters = letters + ", " + lettersIn.getText();
+                //dopisać update myślnika z hasłem
             } else {
                 letters = lettersIn.getText();
             }
-            if (word.indexOf(lettersIn.getText()) == -1) {
+            if (!word.contains(lettersIn.getText())) {
                 if (number < 10) {
                     drawing.draw(number);
                     number++;
