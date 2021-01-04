@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import sample.Connection;
 
 public class Menu {
     @FXML
@@ -19,6 +20,7 @@ public class Menu {
             emptyNick.setText("Nie podałeś nicku");
         } else {
             try {
+                Connection.getInstance().setNick(nick.getText());
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
                 Parent root = fxmlLoader.load();
                 Stage stage = new Stage();

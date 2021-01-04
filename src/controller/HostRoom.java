@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import sample.Connection;
 
 public class HostRoom {
     Stage hostRoomStage;

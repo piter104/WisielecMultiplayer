@@ -9,6 +9,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import sample.Connection;
+
+import java.util.List;
 
 public class Lobby {
 
@@ -21,8 +24,8 @@ public class Lobby {
 
     public void initData(Parent root, Stage stage) {
         this.lobbyStage = stage;
-        items = FXCollections.observableArrayList(
-                "Sztucznie", "Wpisany", "Serwer", "To jest");
+        List<String> rooms = Connection.getInstance().getRooms();
+        items = FXCollections.observableArrayList(rooms);
         serverList.setItems(items);
         lobbyStage.setScene(new Scene(root));
         lobbyStage.show();
