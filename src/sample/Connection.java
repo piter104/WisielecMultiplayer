@@ -60,6 +60,7 @@ public final class Connection {
     }
 
     public List<String> getRooms() {
+
         return new ArrayList<String>(List.of("Sztucznie", "Wpisany", "Serwer", "To jest"));
     }
 
@@ -78,7 +79,7 @@ public final class Connection {
 
 
         Response r = readMessage();
-        System.out.printf("Read from server: %s, %s", r.getType(), r.getResult());
+        System.out.printf("Read from server: %s, %s, %s", r.getType(), r.getResult(), r.getRooms() );
     }
 
     private Response readMessage() {
