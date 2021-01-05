@@ -24,8 +24,7 @@ public class Lobby {
 
     public void initData(Parent root, Stage stage) {
         this.lobbyStage = stage;
-        List<String> rooms = Connection.getInstance().getRooms();
-        items = FXCollections.observableArrayList(rooms);
+        items = FXCollections.observableArrayList( Connection.getInstance().getRooms());
         serverList.setItems(items);
         lobbyStage.setScene(new Scene(root));
         lobbyStage.show();
@@ -39,7 +38,7 @@ public class Lobby {
 
             Stage tempStage = (Stage) serverList.getScene().getWindow();
             tempStage.close();
-
+            Connection.getInstance().joinRoom("TODO:ZMIENIC");
             String serverName = "utwórz tworzenie hosta z nazwa serwera";
             HostRoom hostRoomController = fxmlLoader.getController();
             hostRoomController.initData(root, stage, serverName);

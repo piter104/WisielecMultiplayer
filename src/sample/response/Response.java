@@ -5,29 +5,22 @@ import java.util.List;
 public class Response {
     public String type;
     public String result;
-    public List<String> rooms;
+    public List<Room> rooms;
+    public String hostNick;
+    public List<Integer> letterPositions;
+    public Integer howLongIsTheWord;
+    public Boolean gameFinished;
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public List<String> getRooms() {
-        return rooms;
-    }
-
-    public void setRooms(List<String> rooms) {
-        this.rooms = rooms;
+    @Override
+    public String toString() {
+        return "Response{" +
+                "type='" + type + '\'' +
+                ", result='" + result + '\'' +
+                ", rooms=" + rooms +
+                ", hostNick='" + hostNick + '\'' +
+                ", letterPositions=" + letterPositions +
+                ", howLongIsTheWord=" + howLongIsTheWord +
+                ", gameFinished=" + gameFinished +
+                '}';
     }
 }

@@ -38,12 +38,13 @@ public class HostRoom {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/GamePane.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
-
+            Connection.getInstance().startGame();
             Stage tempStage = (Stage) players.getScene().getWindow();
             tempStage.close();
 
             Game gameController = fxmlLoader.getController();
             gameController.initData(root, stage);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

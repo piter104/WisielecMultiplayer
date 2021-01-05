@@ -1,34 +1,26 @@
 package sample.request;
 
 public class Request {
-    public String type;
+    public RequestType type;
     public String nick;
-    public String lobbyName;
+    public String roomName;
+    public String letter;
 
-
-
-
-    public String getNick() {
-        return nick;
+    @Override
+    public String toString() {
+        return "Request{" +
+                "type=" + type +
+                ", nick='" + nick + '\'' +
+                ", roomName='" + roomName + '\'' +
+                ", letter='" + letter + '\'' +
+                '}';
     }
 
-    public void setNick(String nick) {
-        this.nick = nick;
-    }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getLobbyName() {
-        return lobbyName;
-    }
-
-    public void setLobbyName(String lobbyName) {
-        this.lobbyName = lobbyName;
+    public enum RequestType {
+        JOIN_ROOM,
+        START_GAME,
+        SEND_LETTER,
+        LOGIN
     }
 }
