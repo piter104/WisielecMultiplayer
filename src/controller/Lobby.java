@@ -11,8 +11,6 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import sample.Connection;
 
-import java.util.List;
-
 public class Lobby {
 
     Stage lobbyStage;
@@ -38,7 +36,6 @@ public class Lobby {
 
             Stage tempStage = (Stage) serverList.getScene().getWindow();
             tempStage.close();
-            Connection.getInstance().joinRoom("TODO:ZMIENIC");
             String serverName = "utwórz tworzenie hosta z nazwa serwera";
             HostRoom hostRoomController = fxmlLoader.getController();
             hostRoomController.initData(root, stage, serverName);
@@ -57,6 +54,7 @@ public class Lobby {
 
             Stage tempStage = (Stage) serverList.getScene().getWindow();
             tempStage.close();
+            Connection.getInstance().joinRoom("TODO:ZMIENIC");
 
             HostRoom hostRoomController = fxmlLoader.getController();
             hostRoomController.initData(root, stage, serverName);
