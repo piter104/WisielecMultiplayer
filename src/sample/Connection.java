@@ -115,13 +115,14 @@ public final class Connection {
         return null;
     }
 
-    public void startGame() {
+    public Response startGame() {
         Request request = new Request();
         request.roomName = "room1";
         request.nick = nick;
         request.type = Request.RequestType.START_GAME;
         sendRequest(request);
         Response response = readMessage();
+        return  response;
     }
 
     public Response guessLetter(String letter) {
