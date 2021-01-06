@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import sample.Connection;
 
 public class Lobby {
 
@@ -21,8 +22,7 @@ public class Lobby {
 
     public void initData(Parent root, Stage stage) {
         this.lobbyStage = stage;
-        items = FXCollections.observableArrayList(
-                "Sztucznie", "Wpisany", "Serwer", "To jest");
+        items = FXCollections.observableArrayList( Connection.getInstance().getRooms());
         serverList.setItems(items);
         lobbyStage.setScene(new Scene(root));
         lobbyStage.show();
@@ -36,7 +36,6 @@ public class Lobby {
 
             Stage tempStage = (Stage) serverList.getScene().getWindow();
             tempStage.close();
-
             String serverName = "utwórz tworzenie hosta z nazwa serwera";
             HostRoom hostRoomController = fxmlLoader.getController();
             hostRoomController.initData(root, stage, serverName);
@@ -55,6 +54,7 @@ public class Lobby {
 
             Stage tempStage = (Stage) serverList.getScene().getWindow();
             tempStage.close();
+            Connection.getInstance().joinRoom("TODO:ZMIENIC");
 
             HostRoom hostRoomController = fxmlLoader.getController();
             hostRoomController.initData(root, stage, serverName);

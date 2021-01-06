@@ -11,7 +11,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import sample.Connection;
 import sample.Drawing;
+import sample.response.Response;
+
+import java.util.List;
 
 public class Game {
     @FXML
@@ -51,19 +55,23 @@ public class Game {
 
     public void enterLetter(ActionEvent event) {
         if (lettersIn.getText().length() == 1) {
-            if (letters.length() != 0) {
-                letters = letters + ", " + lettersIn.getText();
-                //dopisać update myślnika z hasłem
-            } else {
-                letters = lettersIn.getText();
-            }
-            if (!word.contains(lettersIn.getText())) {
+            Response response = Connection.getInstance().guessLetter(lettersIn.getText());
+            letters = letters.isBlank() ? lettersIn.getText() : letters + ", " + lettersIn.getText();
+            List<Integer> letterPositions = response.letterPositions;
+            if (letterPositions.isEmpty()) {
                 if (number < 10) {
                     drawing.draw(number);
                     number++;
                 } else {
                     alert.showAndWait();
                 }
+            } else {
+                //TODO dodać literkę na odpowiednich miejsach (wskasanych w letterPositions) na kreskach
+            }
+
+            if (response.gameFinished) {
+                //TODO ALERT WYGRAłes
+                alert.showAndWait();
             }
         }
         lettersIn.clear();
