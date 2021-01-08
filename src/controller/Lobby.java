@@ -1,7 +1,5 @@
 package controller;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,15 +13,13 @@ public class Lobby {
 
     Stage lobbyStage;
 
-    private ObservableList<String> items;
 
     @FXML
     private ListView<String> serverList;
 
     public void initData(Parent root, Stage stage) {
         this.lobbyStage = stage;
-        items = FXCollections.observableArrayList( Connection.getInstance().getRooms());
-        serverList.setItems(items);
+        serverList.setItems(Connection.getInstance().getRooms());
         lobbyStage.setScene(new Scene(root));
         lobbyStage.show();
     }

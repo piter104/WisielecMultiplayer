@@ -2,6 +2,8 @@ package sample;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import sample.request.Request;
 import sample.response.Response;
 import sample.response.Room;
@@ -25,8 +27,9 @@ public final class Connection {
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
     private ObjectMapper mapper;
-    private List<Room> rooms;
+    private ObservableList<String> rooms = FXCollections.observableArrayList();
     private Optional<Room> chosenRoom;
+    private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
 
     private Connection() throws IOException {
         mapper = new ObjectMapper();
@@ -49,6 +52,14 @@ public final class Connection {
         }
 
         System.out.println("Connection established");
+
+        new Thread(() -> {
+            while(true) {
+                Response response = readMessage();
+                dispatchResponse(response);
+            }
+        });
+
     }
 
     public static Connection getInstance() {
@@ -62,20 +73,16 @@ public final class Connection {
         return instance;
     }
 
-    public List<String> getRooms() {
-        return rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+    public ObservableList<String> getRooms() {
+        return rooms;
     }
 
     public void setNick(String text) {
         nick = text;
         Request request = new Request();
-        request.nick = "witamWitam";
+        request.nick = text;
         request.type = Request.RequestType.LOGIN;
         sendRequest(request);
-
-        Response r = readMessage();
-        rooms = r.rooms;
-        System.out.printf("Serverd responded with: %s \n", r.toString());
     }
 
     public void joinRoom(String roomName) {
@@ -84,8 +91,6 @@ public final class Connection {
         request.nick = nick;
         request.type = Request.RequestType.JOIN_ROOM;
         sendRequest(request);
-        Response response = readMessage();
-
     }
 
     private void sendRequest(Request request) {
@@ -115,14 +120,14 @@ public final class Connection {
         return null;
     }
 
-    public Response startGame() {
+
+
+    public void startGame() {
         Request request = new Request();
         request.roomName = "room1";
         request.nick = nick;
         request.type = Request.RequestType.START_GAME;
-        sendRequest(request);
-        Response response = readMessage();
-        return  response;
+        sendRequest(request); //TODO:REMOVE
     }
 
     public Response guessLetter(String letter) {
@@ -133,7 +138,33 @@ public final class Connection {
         request.letter = letter;
         sendRequest(request);
 
-        Response response = readMessage();
+        Response response = readMessage(); //TODO:REMOVE
         return response;
+    }
+
+
+    private void dispatchResponse(Response response) {
+        switch (response.type) {
+            case USER_AUTHENTICATED:
+                if ( response.rooms != null ) {
+                    List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                    rooms.addAll(updateRooms);
+                    System.out.printf("Serverd responded with: %s \n", response.toString());
+                }
+
+                break;
+            case USER_JOINED_ROOM:
+                System.out.println(response.toString());
+                otherPlayersInRoom.setAll(response.otherPlayersInRoom);
+                break;
+            case GAME_STARTED:
+                break;
+            case LETTER_RECEIVED:
+                break;
+        }
+    }
+
+    public ObservableList<String> getOtherPlayersInRoom() {
+        return otherPlayersInRoom;
     }
 }
