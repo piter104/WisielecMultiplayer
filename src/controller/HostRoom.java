@@ -1,7 +1,5 @@
 package controller;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +12,6 @@ import sample.Connection;
 
 public class HostRoom {
     Stage hostRoomStage;
-    private ObservableList<String> items;
 
     @FXML
     private Text roomInfo;
@@ -26,9 +23,7 @@ public class HostRoom {
     public void initData(Parent root, Stage stage, String serverName) {
         this.hostRoomStage = stage;
         roomInfo.setText(serverName);
-        items = FXCollections.observableArrayList(
-                "host", "ty");
-        players.setItems(items);
+        players.setItems(Connection.getInstance().getOtherPlayersInRoom());
         stage.setScene(new Scene(root));
         stage.show();
     }
