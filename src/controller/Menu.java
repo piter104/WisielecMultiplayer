@@ -25,8 +25,6 @@ public class Menu {
                 Parent root = fxmlLoader.load();
                 Stage stage = new Stage();
 
-                //Player player = new Player(2, nick.getText());
-
                 Stage tempStage = (Stage) emptyNick.getScene().getWindow();
                 tempStage.close();
 

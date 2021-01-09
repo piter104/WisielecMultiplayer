@@ -24,6 +24,7 @@ public final class Connection {
     private static Connection instance;
     private Socket clientSocket;
     private String nick;
+    private Integer howLongIsTheWord;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
     private ObjectMapper mapper;
@@ -53,13 +54,13 @@ public final class Connection {
 
         System.out.println("Connection established");
 
-        new Thread(() -> {
+        Thread responseReader = new Thread(() -> {
             while(true) {
                 Response response = readMessage();
                 dispatchResponse(response);
             }
         });
-
+        responseReader.start();
     }
 
     public static Connection getInstance() {
@@ -75,6 +76,10 @@ public final class Connection {
 
     public ObservableList<String> getRooms() {
         return rooms;
+    }
+
+    public Integer getHowLongIsTheWord() {
+        return howLongIsTheWord;
     }
 
     public void setNick(String text) {
@@ -122,12 +127,14 @@ public final class Connection {
 
 
 
-    public void startGame() {
+    public Integer startGame() {
         Request request = new Request();
         request.roomName = "room1";
         request.nick = nick;
         request.type = Request.RequestType.START_GAME;
         sendRequest(request); //TODO:REMOVE
+        Response response = readMessage();
+        return response.howLongIsTheWord;
     }
 
     public Response guessLetter(String letter) {
@@ -158,6 +165,7 @@ public final class Connection {
                 otherPlayersInRoom.setAll(response.otherPlayersInRoom);
                 break;
             case GAME_STARTED:
+                this.howLongIsTheWord = response.howLongIsTheWord;
                 break;
             case LETTER_RECEIVED:
                 break;

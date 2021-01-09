@@ -37,8 +37,9 @@ public class HostRoom {
             Stage tempStage = (Stage) players.getScene().getWindow();
             tempStage.close();
 
+            Integer howLongIsTheWord = Connection.getInstance().getHowLongIsTheWord();
             Game gameController = fxmlLoader.getController();
-            gameController.initData(root, stage);
+            gameController.initData(root, stage, howLongIsTheWord);
 
         } catch (Exception e) {
             e.printStackTrace();
