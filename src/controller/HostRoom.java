@@ -34,12 +34,13 @@ public class HostRoom {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/GamePane.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
-            Response response = Connection.getInstance().startGame();
+            Connection.getInstance().startGame();
             Stage tempStage = (Stage) players.getScene().getWindow();
             tempStage.close();
 
+            Integer howLongIsTheWord = Connection.getInstance().getHowLongIsTheWord();
             Game gameController = fxmlLoader.getController();
-            gameController.initData(root, stage, response.howLongIsTheWord);
+            gameController.initData(root, stage, howLongIsTheWord);
 
         } catch (Exception e) {
             e.printStackTrace();
