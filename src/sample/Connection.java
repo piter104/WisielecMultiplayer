@@ -4,13 +4,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controller.Game;
 import controller.HostRoom;
+import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import sample.request.Request;
 import sample.response.Response;
@@ -23,9 +27,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class Connection {
 
@@ -39,6 +45,9 @@ public final class Connection {
     private ObservableList<String> rooms = FXCollections.observableArrayList();
     private Optional<Room> chosenRoom;
     private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
+    private List<Integer> letterPositions;
+    private List<Integer> mistakesNumber;
+
 
     private Connection() throws IOException {
         mapper = new ObjectMapper();
@@ -160,7 +169,7 @@ public final class Connection {
                 if (response.rooms != null) {
                     List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
                     rooms.addAll(updateRooms);
-                    System.out.printf("Serverd responded with: %s \n", response.toString());
+                    System.out.printf("Server responded with: %s \n", response.toString());
                 }
 
                 break;
@@ -173,6 +182,8 @@ public final class Connection {
                 Platform.runLater(this::openGame);
                 break;
             case LETTER_RECEIVED:
+                this.letterPositions = response.letterPositions;
+                Platform.runLater(this::handleLetter);
                 break;
         }
     }
@@ -180,26 +191,92 @@ public final class Connection {
     public ObservableList<String> getOtherPlayersInRoom() {
         return otherPlayersInRoom;
     }
+
     @FXML
     public ListView<String> players;
+
+
+    Game gameController;
+
+    //przesuniecie wisielcow
+    private Integer xMove = 150;
+    private Integer yMove = 150;
+
+    Group group;
 
     private void openGame() {
 
         try {
-
-
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/GamePane.fxml"));
             Parent root = fxmlLoader.load();
 
             Stage stage = new Stage();
-            Stage window = (Stage)HostRoom.hostRoomStage.getScene().getWindow();
+            Stage window = (Stage) HostRoom.hostRoomStage.getScene().getWindow();
             window.close();
             Integer howLongIsTheWord = Connection.getInstance().getHowLongIsTheWord();
-            Game gameController = fxmlLoader.getController();
-            gameController.initData(root, stage, howLongIsTheWord);
+            gameController = fxmlLoader.getController();
+
+            group = new Group(root);
+
+            for (int i = 0; i < playerNumber; i++) {
+                textList.add(new Text());
+                hangManList.add(new Drawing(xMove * i, yMove));
+                textList.get(i).setText("nick gracza: " + i);
+                textList.get(i).setX(hangManList.get(i).getX() + xMove * i);
+                textList.get(i).setY(hangManList.get(i).getY() + yMove + 40);
+            }
+
+            for (int i = 0; i < playerNumber; i++) {
+                pathTransition.setPath(hangManList.get(i).getPath());
+                headList.add(hangManList.get(i).getCircle());
+                group.getChildren().add(hangManList.get(i).getPath());
+                group.getChildren().add(hangManList.get(i).getCircle());
+                group.getChildren().add(textList.get(i));
+            }
+
+            String repeater = IntStream
+                    .range(0, howLongIsTheWord).mapToObj(i -> "_")
+                    .collect(Collectors.joining(" "));
+
+            gameController.getPassword().setText(repeater);
+
+            gameController.initData(group, stage);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    List<Drawing> hangManList = new ArrayList<>();
+    List<Text> textList = new ArrayList<>();
+    List<Circle> headList = new ArrayList<>();
+    PathTransition pathTransition = new PathTransition();
+
+    Integer playerNumber = 4;
+    Integer number = 0;
+    char[] tempPassword;
+
+    private void handleLetter() {
+        //TODO liczenie błędów na serwerze w liście dla każdego gracza i wstawić tutaj zamiast number
+        if (letterPositions.isEmpty()) {
+            for (int i = 0; i < playerNumber; i++) {
+                hangManList.get(i).draw(number);
+                if (headList.get(i) != hangManList.get(i).getCircle())
+                    group.getChildren().add(hangManList.get(i).getCircle());
+            }
+            number++;
+            gameController.updateMistakesNumber(number);
+        } else {
+            //TODO trzeba dodać tą literkę z serwera w odpowiedzi
+//            tempPassword = gameController.getPassword().getText().toCharArray();
+//           for (int i : letterPositions)
+//               tempPassword[2 * i] = guessedLetter.toCharArray()[0];
+//            gameController.getPassword().setText(String.valueOf(tempPassword));
+        }
+// TODO:
+//                if (response.gameFinished) {
+//                    if (!password.getText().contains("_"))
+//                        alertWin.showAndWait();
+//                }
     }
 }

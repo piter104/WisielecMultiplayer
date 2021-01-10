@@ -5,18 +5,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="430.0" prefWidth="715.0"
-            xmlns="http://javafx.com/javafx/11.0.1" fx:controller="controller.Lobby">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Lobby">
    <children>
-      <Text layoutX="158.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lobby">
+      <Text layoutX="177.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lobby">
          <font>
-            <Font size="30.0"/>
+            <Font size="30.0" />
          </font>
       </Text>
-      <Button fx:id="hostGame" layoutX="499.0" layoutY="159.0" mnemonicParsing="false" onAction="#pressButton"
-              prefHeight="40.0" prefWidth="82.0" text="Załóż grę"/>
-      <ListView fx:id="serverList" layoutX="59.0" layoutY="94.0" prefHeight="273.0" prefWidth="280.0"/>
-      <Button layoutX="499.0" layoutY="215.0" mnemonicParsing="false" onAction="#chooseServerButton" prefHeight="40.0"
-              prefWidth="82.0" text="Wybierz"/>
+      <Button fx:id="hostGame" layoutX="540.0" layoutY="211.0" mnemonicParsing="false" onAction="#pressButton" prefHeight="40.0" prefWidth="82.0" text="Załóż grę" />
+      <ListView fx:id="serverList" layoutX="59.0" layoutY="94.0" prefHeight="427.0" prefWidth="327.0" />
+      <Button layoutX="540.0" layoutY="327.0" mnemonicParsing="false" onAction="#chooseServerButton" prefHeight="40.0" prefWidth="82.0" text="Wybierz" />
    </children>
 </AnchorPane>

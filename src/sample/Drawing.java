@@ -8,29 +8,33 @@ import java.util.List;
 public class Drawing {
     private double x = 125;
     private double y = 125;
+    private double xMove;
+    private double yMove;
     private List<PathElement> objects = new ArrayList<>();
     private Path path = new Path();
     private Circle circle;
 
-    public Drawing() {
-        objects.add(new MoveTo(x, 3 * y));
-        objects.add(new LineTo(x, 1.5 * y));
-        objects.add(new LineTo(2 * x, 1.5 * y));
-        objects.add(new LineTo(2 * x, 3 * y));
-        objects.add(new MoveTo(1.5 * x, 1.5 * y));
-        objects.add(new LineTo(1.5 * x, 1.9 * y));
+    public Drawing(double xMove, double yMove) {
+        this.xMove = xMove;
+        this.yMove = yMove;
+        objects.add(new MoveTo(x + xMove, 3 * y + yMove));
+        objects.add(new LineTo(x + xMove, 1.5 * y + yMove));
+        objects.add(new LineTo(2 * x + xMove, 1.5 * y + yMove));
+        objects.add(new LineTo(2 * x + xMove, 3 * y + yMove));
+        objects.add(new MoveTo(1.5 * x + xMove, 1.5 * y + yMove));
+        objects.add(new LineTo(1.5 * x + xMove, 1.9 * y + yMove));
         objects.add(null); // to po to żeby w tym miejscu ryować kółko czyli głowę xD
-        objects.add(new MoveTo(1.5 * x, 2 * y));
-        objects.add(new LineTo(1.5 * x, 2.5 * y));
-        objects.add(new MoveTo(1.5 * x, 2.5 * y));
-        objects.add(new LineTo(1.35 * x, 2.6 * y));
-        objects.add(new MoveTo(1.5 * x, 2.5 * y));
-        objects.add(new LineTo(1.65 * x, 2.6 * y));
-        objects.add(new MoveTo(1.5 * x, 2.25 * y));
-        objects.add(new LineTo(1.35 * x, 2.15 * y));
-        objects.add(new MoveTo(1.5 * x, 2.25 * y));
-        objects.add(new LineTo(1.65 * x, 2.15 * y));
-        circle = new Circle(1.5 * x, 2 * y, 0);
+        objects.add(new MoveTo(1.5 * x + xMove, 2 * y + yMove));
+        objects.add(new LineTo(1.5 * x + xMove, 2.5 * y + yMove));
+        objects.add(new MoveTo(1.5 * x + xMove, 2.5 * y + yMove));
+        objects.add(new LineTo(1.35 * x + xMove, 2.6 * y + yMove));
+        objects.add(new MoveTo(1.5 * x + xMove, 2.5 * y + yMove));
+        objects.add(new LineTo(1.65 * x + xMove, 2.6 * y + yMove));
+        objects.add(new MoveTo(1.5 * x + xMove, 2.25 * y + yMove));
+        objects.add(new LineTo(1.35 * x + xMove, 2.15 * y + yMove));
+        objects.add(new MoveTo(1.5 * x + xMove, 2.25 * y + yMove));
+        objects.add(new LineTo(1.65 * x + xMove, 2.15 * y + yMove));
+        circle = new Circle(1.5 * x + xMove, 2 * y + yMove, 0);
     }
 
     public Circle getCircle() {
@@ -41,6 +45,14 @@ public class Drawing {
         return path;
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
     public void draw(int number) {
         for (int i = 0; i <= number; i++) {
             if (objects.get(i) != null) {
@@ -49,7 +61,7 @@ public class Drawing {
                     ++number;
                 }
             } else {
-                circle = new Circle(1.5 * x, 2 * y, 15);
+                circle = new Circle(1.5 * x + xMove, 2 * y + yMove, 15);
             }
         }
     }
