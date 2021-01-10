@@ -2,8 +2,16 @@ package sample;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controller.Game;
+import controller.HostRoom;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.ListView;
+import javafx.stage.Stage;
 import sample.request.Request;
 import sample.response.Response;
 import sample.response.Room;
@@ -41,9 +49,9 @@ public final class Connection {
         SocketAddress socketAddress = new InetSocketAddress(host, port);
         clientSocket = new Socket();
         int timeOut = 10000;
-
+        clientSocket.connect(socketAddress, timeOut);
         try {
-            clientSocket.connect(socketAddress, timeOut);
+
             inputStream = new DataInputStream(clientSocket.getInputStream());
             outputStream = new DataOutputStream(clientSocket.getOutputStream());
         } catch (IOException ex) {
@@ -55,9 +63,8 @@ public final class Connection {
         System.out.println("Connection established");
 
         Thread responseReader = new Thread(() -> {
-            while(true) {
-                Response response = readMessage();
-                dispatchResponse(response);
+            while (true) {
+                readMessage().ifPresent(this::dispatchResponse);
             }
         });
         responseReader.start();
@@ -109,51 +116,48 @@ public final class Connection {
         }
     }
 
-    private Response readMessage() {
+    private Optional<Response> readMessage() {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length = 0;
         try {
             length = inputStream.read(buffer);
+            if (length == -1) {
+                return Optional.empty();
+            }
             result.write(buffer, 0, length);
             Response response = mapper.readValue(result.toByteArray(), Response.class);
-            return response;
+            return Optional.of(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
-
-    public Integer startGame() {
+    public void startGame() {
         Request request = new Request();
         request.roomName = "room1";
         request.nick = nick;
         request.type = Request.RequestType.START_GAME;
         sendRequest(request); //TODO:REMOVE
-        Response response = readMessage();
-        return response.howLongIsTheWord;
     }
 
-    public Response guessLetter(String letter) {
+    public void guessLetter(String letter) {
         Request request = new Request();
         request.roomName = "room1";
         request.nick = nick;
         request.type = Request.RequestType.SEND_LETTER;
         request.letter = letter;
         sendRequest(request);
-
-        Response response = readMessage(); //TODO:REMOVE
-        return response;
     }
 
 
     private void dispatchResponse(Response response) {
         switch (response.type) {
             case USER_AUTHENTICATED:
-                if ( response.rooms != null ) {
+                if (response.rooms != null) {
                     List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
                     rooms.addAll(updateRooms);
                     System.out.printf("Serverd responded with: %s \n", response.toString());
@@ -162,10 +166,11 @@ public final class Connection {
                 break;
             case USER_JOINED_ROOM:
                 System.out.println(response.toString());
-                otherPlayersInRoom.setAll(response.otherPlayersInRoom);
+                Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
                 break;
             case GAME_STARTED:
                 this.howLongIsTheWord = response.howLongIsTheWord;
+                Platform.runLater(this::openGame);
                 break;
             case LETTER_RECEIVED:
                 break;
@@ -174,5 +179,27 @@ public final class Connection {
 
     public ObservableList<String> getOtherPlayersInRoom() {
         return otherPlayersInRoom;
+    }
+    @FXML
+    public ListView<String> players;
+
+    private void openGame() {
+
+        try {
+
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/GamePane.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+            Stage window = (Stage)HostRoom.hostRoomStage.getScene().getWindow();
+            window.close();
+            Integer howLongIsTheWord = Connection.getInstance().getHowLongIsTheWord();
+            Game gameController = fxmlLoader.getController();
+            gameController.initData(root, stage, howLongIsTheWord);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
