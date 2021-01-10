@@ -13,7 +13,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import sample.Connection;
 import sample.Drawing;
-import sample.response.Response;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +23,7 @@ public class Game {
     private Text lettersOut;
     @FXML
     private TextField lettersIn;
+
     @FXML
     private Text password;
 
@@ -71,9 +71,10 @@ public class Game {
         if (number < 10) {
             String guessedLetter = lettersIn.getText();
             if (guessedLetter.length() == 1) {
-                Response response = Connection.getInstance().guessLetter(guessedLetter);
+                Connection.getInstance().guessLetter(guessedLetter);
                 letters = letters.isBlank() ? guessedLetter : letters + ", " + guessedLetter;
-                List<Integer> letterPositions = response.letterPositions;
+                //TODO::: NAPRAWAWAWAW
+                List<Integer> letterPositions = List.of();
                 if (letterPositions.isEmpty()) {
                     drawing.draw(number);
                     if (circle != drawing.getCircle())
@@ -85,11 +86,11 @@ public class Game {
                         tempPassword[2 * i] = guessedLetter.toCharArray()[0];
                     password.setText(String.valueOf(tempPassword));
                 }
-
-                if (response.gameFinished) {
-                    if (!password.getText().contains("_"))
-                        alertWin.showAndWait();
-                }
+// TODO:
+//                if (response.gameFinished) {
+//                    if (!password.getText().contains("_"))
+//                        alertWin.showAndWait();
+//                }
             }
             lettersIn.clear();
             lettersOut.setText(letters);
