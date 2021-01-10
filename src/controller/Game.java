@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import sample.Connection;
 import sample.Drawing;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,19 +24,24 @@ public class Game {
     private Text lettersOut;
     @FXML
     private TextField lettersIn;
-
     @FXML
     private Text password;
 
-    private int number = 0;
+    private Integer number = 0;
+    //przesuniecie wisielcow
+    private Integer xMove = 150;
+    private Integer yMove = 150;
     private String letters = "";
     private final String word = "";
     char[] tempPassword;
+    // liczba graczy
+    int playerNumber = 4;
 
     Group group;
     Stage stage;
-    Drawing drawing = new Drawing();
-    Circle circle = drawing.getCircle();
+    List<Drawing> hangManList = new ArrayList<>();
+    List<Text> textList = new ArrayList<>();
+    List<Circle> headList = new ArrayList<>();
     PathTransition pathTransition = new PathTransition();
     Alert alertLose = new Alert(Alert.AlertType.INFORMATION);
     Alert alertWin = new Alert(Alert.AlertType.INFORMATION);
@@ -53,12 +59,24 @@ public class Game {
         alertWin.setHeaderText(null);
         alertWin.setContentText("Wygrałeś kolego");
 
-        pathTransition.setPath(drawing.getPath());
-        group.getChildren().add(drawing.getPath());
-
+        for (int i = 0; i < playerNumber; i++) {
+            textList.add(new Text());
+            hangManList.add(new Drawing(xMove * i, yMove));
+            textList.get(i).setText("nick gracza: " + i);
+            textList.get(i).setX(hangManList.get(i).getX() + xMove * i);
+            textList.get(i).setY(hangManList.get(i).getY() + yMove + 40);
+        }
         String repeater = IntStream
                 .range(0, howLongIsTheWord).mapToObj(i -> "_")
                 .collect(Collectors.joining(" "));
+
+        for (int i = 0; i < playerNumber; i++) {
+            pathTransition.setPath(hangManList.get(i).getPath());
+            headList.add(hangManList.get(i).getCircle());
+            group.getChildren().add(hangManList.get(i).getPath());
+            group.getChildren().add(hangManList.get(i).getCircle());
+            group.getChildren().add(textList.get(i));
+        }
 
         password.setText(repeater);
 
@@ -76,9 +94,11 @@ public class Game {
                 //TODO::: NAPRAWAWAWAW
                 List<Integer> letterPositions = List.of();
                 if (letterPositions.isEmpty()) {
-                    drawing.draw(number);
-                    if (circle != drawing.getCircle())
-                        group.getChildren().add(drawing.getCircle());
+                    for (int i = 0; i < playerNumber; i++) {
+                        hangManList.get(i).draw(number);
+                        if (headList.get(i) != hangManList.get(i).getCircle())
+                            group.getChildren().add(hangManList.get(i).getCircle());
+                    }
                     number++;
                 } else {
                     tempPassword = password.getText().toCharArray();
