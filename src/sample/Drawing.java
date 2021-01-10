@@ -17,6 +17,7 @@ public class Drawing {
     public Drawing(double xMove, double yMove) {
         this.xMove = xMove;
         this.yMove = yMove;
+        objects.add(null);
         objects.add(new MoveTo(x + xMove, 3 * y + yMove));
         objects.add(new LineTo(x + xMove, 1.5 * y + yMove));
         objects.add(new LineTo(2 * x + xMove, 1.5 * y + yMove));
@@ -60,7 +61,7 @@ public class Drawing {
                 if (objects.get(i) instanceof MoveTo) {
                     ++number;
                 }
-            } else {
+            } else if (i != 0) {
                 circle = new Circle(1.5 * x + xMove, 2 * y + yMove, 15);
             }
         }

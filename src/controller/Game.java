@@ -61,7 +61,8 @@ public class Game {
     public void enterLetter(ActionEvent event) {
         if (number < 10) {
             String guessedLetter = lettersIn.getText();
-            letters = letters.isBlank() ? guessedLetter : letters + ", " + guessedLetter;
+            if (!guessedLetter.isEmpty())
+                letters = letters.isBlank() ? guessedLetter : letters + ", " + guessedLetter;
             if (guessedLetter.length() == 1) {
                 Connection.getInstance().guessLetter(guessedLetter);
             }

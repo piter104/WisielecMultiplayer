@@ -49,7 +49,6 @@ public final class Connection {
     private List<Integer> letterPositions;
     private List<Integer> mistakesNumber;
 
-
     private Connection() throws IOException {
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -175,6 +174,7 @@ public final class Connection {
                 break;
             case USER_JOINED_ROOM:
                 System.out.println(response.toString());
+
                 Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
                 break;
             case GAME_STARTED:
@@ -192,13 +192,12 @@ public final class Connection {
     }
 
     private void updateOthersHangmen(Response response) {
-        for (int i = 0; i < playerNumber; i++) {
-            hangManList.get(i).draw(number);
+        for (int i = 0; i < otherPlayersInRoom.size(); i++) {
+            hangManList.get(i).draw(response.userWrongCounterMap.get(otherPlayersInRoom.get(i)));
             if (headList.get(i) != hangManList.get(i).getCircle())
                 group.getChildren().add(hangManList.get(i).getCircle());
         }
-        number++;
-        gameController.updateMistakesNumber(number);
+        //gameController.updateMistakesNumber(number);
     }
 
     public ObservableList<String> getOtherPlayersInRoom() {
@@ -231,10 +230,12 @@ public final class Connection {
 
             group = new Group(root);
 
+            Integer playerNumber = otherPlayersInRoom.size();
+
             for (int i = 0; i < playerNumber; i++) {
                 textList.add(new Text());
                 hangManList.add(new Drawing(xMove * i, yMove));
-                textList.get(i).setText("nick gracza: " + i);
+                textList.get(i).setText(otherPlayersInRoom.get(i));
                 textList.get(i).setX(hangManList.get(i).getX() + xMove * i);
                 textList.get(i).setY(hangManList.get(i).getY() + yMove + 40);
             }
@@ -265,8 +266,6 @@ public final class Connection {
     List<Circle> headList = new ArrayList<>();
     PathTransition pathTransition = new PathTransition();
 
-    Integer playerNumber = 4;
-    Integer number = 0;
     char[] tempPassword;
 
     private void handleLetter(Response response) {
