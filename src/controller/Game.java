@@ -71,4 +71,5 @@ public class Game {
         lettersIn.clear();
         lettersOut.setText(letters);
     }
+
 }

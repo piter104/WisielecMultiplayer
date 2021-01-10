@@ -29,6 +29,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -150,7 +151,7 @@ public final class Connection {
         request.roomName = "room1";
         request.nick = nick;
         request.type = Request.RequestType.START_GAME;
-        sendRequest(request); //TODO:REMOVE
+        sendRequest(request);
     }
 
     public void guessLetter(String letter) {
@@ -171,7 +172,6 @@ public final class Connection {
                     rooms.addAll(updateRooms);
                     System.out.printf("Server responded with: %s \n", response.toString());
                 }
-
                 break;
             case USER_JOINED_ROOM:
                 System.out.println(response.toString());
@@ -183,9 +183,22 @@ public final class Connection {
                 break;
             case LETTER_RECEIVED:
                 this.letterPositions = response.letterPositions;
-                Platform.runLater(this::handleLetter);
+                Platform.runLater(() -> handleLetter(response));
+                break;
+            case SOMEBODY_GUESSED_WRONG:
+                Platform.runLater( () -> updateOthersHangmen(response));
                 break;
         }
+    }
+
+    private void updateOthersHangmen(Response response) {
+        for (int i = 0; i < playerNumber; i++) {
+            hangManList.get(i).draw(number);
+            if (headList.get(i) != hangManList.get(i).getCircle())
+                group.getChildren().add(hangManList.get(i).getCircle());
+        }
+        number++;
+        gameController.updateMistakesNumber(number);
     }
 
     public ObservableList<String> getOtherPlayersInRoom() {
@@ -256,22 +269,15 @@ public final class Connection {
     Integer number = 0;
     char[] tempPassword;
 
-    private void handleLetter() {
-        //TODO liczenie błędów na serwerze w liście dla każdego gracza i wstawić tutaj zamiast number
-        if (letterPositions.isEmpty()) {
-            for (int i = 0; i < playerNumber; i++) {
-                hangManList.get(i).draw(number);
-                if (headList.get(i) != hangManList.get(i).getCircle())
-                    group.getChildren().add(hangManList.get(i).getCircle());
-            }
-            number++;
-            gameController.updateMistakesNumber(number);
-        } else {
-            //TODO trzeba dodać tą literkę z serwera w odpowiedzi
-//            tempPassword = gameController.getPassword().getText().toCharArray();
-//           for (int i : letterPositions)
-//               tempPassword[2 * i] = guessedLetter.toCharArray()[0];
-//            gameController.getPassword().setText(String.valueOf(tempPassword));
+    private void handleLetter(Response response) {
+        Map<String, Integer> userWrongCounterMap = response.userWrongCounterMap;
+
+
+        if (!letterPositions.isEmpty()) {
+            tempPassword = gameController.getPassword().getText().toCharArray();
+            for (int i : letterPositions)
+                tempPassword[2 * i] = response.letterGuessed.toCharArray()[0];
+            gameController.getPassword().setText(String.valueOf(tempPassword));
         }
 // TODO:
 //                if (response.gameFinished) {
