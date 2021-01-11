@@ -50,7 +50,7 @@ public class Lobby {
 
             Stage tempStage = (Stage) serverList.getScene().getWindow();
             tempStage.close();
-            Connection.getInstance().joinRoom("TODO:ZMIENIC");
+            Connection.getInstance().joinRoom(serverName);
 
             HostRoom hostRoomController = fxmlLoader.getController();
             hostRoomController.initData(root, stage, serverName);

@@ -16,6 +16,7 @@ public class Response {
     public Map<String, Integer> userWrongCounterMap;
     public String winner;
     public String loser;
+    public String roomName;
 
     @Override
     public String toString() {
@@ -32,6 +33,7 @@ public class Response {
                 ", userWrongCounterMap=" + userWrongCounterMap +
                 ", winner=" + winner +
                 ", loser=" + loser +
+                ", roomName=" + roomName +
                 '}';
     }
 

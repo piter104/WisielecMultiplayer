@@ -111,7 +111,7 @@ public final class Connection {
 
     public void joinRoom(String roomName) {
         Request request = new Request();
-        request.roomName = "room1";
+        request.roomName = roomName;
         request.nick = nick;
         request.type = Request.RequestType.JOIN_ROOM;
         sendRequest(request);
@@ -148,17 +148,17 @@ public final class Connection {
     }
 
 
-    public void startGame() {
+    public void startGame(String roomName) {
         Request request = new Request();
-        request.roomName = "room1";
+        request.roomName = roomName;
         request.nick = nick;
         request.type = Request.RequestType.START_GAME;
         sendRequest(request);
     }
 
-    public void guessLetter(String letter) {
+    public void guessLetter(String letter, String roomName) {
         Request request = new Request();
-        request.roomName = "room1";
+        request.roomName = roomName;
         request.nick = nick;
         request.type = Request.RequestType.SEND_LETTER;
         request.letter = letter;
@@ -182,7 +182,7 @@ public final class Connection {
                 break;
             case GAME_STARTED:
                 this.howLongIsTheWord = response.howLongIsTheWord;
-                Platform.runLater(this::openGame);
+                Platform.runLater(() -> openGame(response.roomName));
                 break;
             case LETTER_RECEIVED:
                 this.letterPositions = response.letterPositions;
@@ -195,7 +195,7 @@ public final class Connection {
                 Platform.runLater(() -> printWinAlert(response));
                 break;
             case YOU_LOST:
-                Platform.runLater( () -> printLoseAlert(response));
+                Platform.runLater(() -> printLoseAlert(response));
                 break;
         }
     }
@@ -226,7 +226,7 @@ public final class Connection {
 
     Group group;
 
-    private void openGame() {
+    private void openGame(String roomName) {
 
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/GamePane.fxml"));
@@ -264,7 +264,7 @@ public final class Connection {
 
             gameController.getPassword().setText(repeater);
 
-            gameController.initData(group, stage);
+            gameController.initData(group, stage, roomName);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -4,14 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import sample.Connection;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Game {
     @FXML
@@ -21,6 +18,7 @@ public class Game {
     @FXML
     private Text password;
 
+    private String roomName;
 
     private String letters = "";
 
@@ -28,25 +26,15 @@ public class Game {
 
     Group group;
     Stage stage;
-    List<Integer> letterPositions = new ArrayList<>();
-    List<Integer> mistakesNumber = new ArrayList<>();
 
 
-    public void initData(Group group, Stage gameStage) {
+    public void initData(Group group, Stage gameStage, String roomName) {
         stage = gameStage;
         this.group = group;
-
-//        alertLose.setTitle("Koniec Gry");
-//        alertLose.setHeaderText(null);
-//        alertLose.setContentText("Przegrałeś kolego");
-
+        this.roomName = roomName;
 
         stage.setScene(new Scene(group));
         stage.show();
-    }
-
-    public void updateMistakesNumber(Integer mistakesNumber) {
-        this.number = mistakesNumber;
     }
 
     public Text getPassword() {
@@ -58,11 +46,9 @@ public class Game {
             String guessedLetter = lettersIn.getText();
             if (guessedLetter.length() == 1) {
                 letters = letters.isBlank() ? guessedLetter : letters + ", " + guessedLetter;
-                Connection.getInstance().guessLetter(guessedLetter);
+                Connection.getInstance().guessLetter(guessedLetter, roomName);
             }
-
         }
-//            alertLose.showAndWait();
         lettersIn.clear();
         lettersOut.setText(letters);
     }

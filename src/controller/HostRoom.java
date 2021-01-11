@@ -29,6 +29,6 @@ public class HostRoom {
     }
 
     public void pressButton(ActionEvent event) {
-        Connection.getInstance().startGame();
+        Connection.getInstance().startGame(roomInfo.getText());
     }
 }
