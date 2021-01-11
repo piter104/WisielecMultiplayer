@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -47,7 +48,9 @@ public final class Connection {
     private Optional<Room> chosenRoom;
     private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
     private List<Integer> letterPositions;
-    private List<Integer> mistakesNumber;
+    Map<String, Integer> mistakesCounter;
+    Alert alertLose = new Alert(Alert.AlertType.INFORMATION);
+    Alert alertWin = new Alert(Alert.AlertType.INFORMATION);
 
     private Connection() throws IOException {
         mapper = new ObjectMapper();
@@ -186,12 +189,19 @@ public final class Connection {
                 Platform.runLater(() -> handleLetter(response));
                 break;
             case SOMEBODY_GUESSED_WRONG:
-                Platform.runLater( () -> updateOthersHangmen(response));
+                Platform.runLater(() -> updateOthersHangmen(response));
+                break;
+            case GAME_FINISHED:
+                Platform.runLater(() -> printWinAlert(response));
+                break;
+            case YOU_LOST:
+                Platform.runLater( () -> printLoseAlert(response));
                 break;
         }
     }
 
     private void updateOthersHangmen(Response response) {
+        mistakesCounter = response.userWrongCounterMap;
         for (int i = 0; i < otherPlayersInRoom.size(); i++) {
             hangManList.get(i).draw(response.userWrongCounterMap.get(otherPlayersInRoom.get(i)));
             if (headList.get(i) != hangManList.get(i).getCircle())
@@ -269,19 +279,25 @@ public final class Connection {
     char[] tempPassword;
 
     private void handleLetter(Response response) {
-        Map<String, Integer> userWrongCounterMap = response.userWrongCounterMap;
-
-
         if (!letterPositions.isEmpty()) {
             tempPassword = gameController.getPassword().getText().toCharArray();
             for (int i : letterPositions)
                 tempPassword[2 * i] = response.letterGuessed.toCharArray()[0];
             gameController.getPassword().setText(String.valueOf(tempPassword));
         }
-// TODO:
-//                if (response.gameFinished) {
-//                    if (!password.getText().contains("_"))
-//                        alertWin.showAndWait();
-//                }
+    }
+
+    private void printWinAlert(Response response) {
+        alertWin.setTitle("Koniec Gry");
+        alertWin.setHeaderText(null);
+        alertWin.setContentText("Wygrał użytkownik: " + response.winner);
+        alertWin.showAndWait();
+    }
+
+    private void printLoseAlert(Response response) {
+        alertLose.setTitle("Koniec Gry");
+        alertLose.setHeaderText(null);
+        alertLose.setContentText("Przegrałeś: " + response.loser);
+        alertLose.showAndWait();
     }
 }

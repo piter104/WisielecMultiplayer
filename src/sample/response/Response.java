@@ -14,6 +14,8 @@ public class Response {
     public Boolean gameFinished;
     public String letterGuessed;
     public Map<String, Integer> userWrongCounterMap;
+    public String winner;
+    public String loser;
 
     @Override
     public String toString() {
@@ -28,6 +30,8 @@ public class Response {
                 ", gameFinished=" + gameFinished +
                 ", letterGuessed='" + letterGuessed + '\'' +
                 ", userWrongCounterMap=" + userWrongCounterMap +
+                ", winner=" + winner +
+                ", loser=" + loser +
                 '}';
     }
 
@@ -36,7 +40,8 @@ public class Response {
         USER_JOINED_ROOM,
         GAME_STARTED,
         SOMEBODY_GUESSED_WRONG,
-        LETTER_RECEIVED;
-
+        LETTER_RECEIVED,
+        GAME_FINISHED,
+        YOU_LOST;
     }
 }

@@ -30,21 +30,16 @@ public class Game {
     Stage stage;
     List<Integer> letterPositions = new ArrayList<>();
     List<Integer> mistakesNumber = new ArrayList<>();
-    Alert alertLose = new Alert(Alert.AlertType.INFORMATION);
-    Alert alertWin = new Alert(Alert.AlertType.INFORMATION);
 
 
     public void initData(Group group, Stage gameStage) {
         stage = gameStage;
         this.group = group;
 
-        alertLose.setTitle("Koniec Gry");
-        alertLose.setHeaderText(null);
-        alertLose.setContentText("Przegrałeś kolego");
+//        alertLose.setTitle("Koniec Gry");
+//        alertLose.setHeaderText(null);
+//        alertLose.setContentText("Przegrałeś kolego");
 
-        alertWin.setTitle("Gratulacje");
-        alertWin.setHeaderText(null);
-        alertWin.setContentText("Wygrałeś kolego");
 
         stage.setScene(new Scene(group));
         stage.show();
@@ -61,14 +56,13 @@ public class Game {
     public void enterLetter(ActionEvent event) {
         if (number < 10) {
             String guessedLetter = lettersIn.getText();
-            if (!guessedLetter.isEmpty())
-                letters = letters.isBlank() ? guessedLetter : letters + ", " + guessedLetter;
             if (guessedLetter.length() == 1) {
+                letters = letters.isBlank() ? guessedLetter : letters + ", " + guessedLetter;
                 Connection.getInstance().guessLetter(guessedLetter);
             }
 
-        } else
-            alertLose.showAndWait();
+        }
+//            alertLose.showAndWait();
         lettersIn.clear();
         lettersOut.setText(letters);
     }
