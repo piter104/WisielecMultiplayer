@@ -111,7 +111,7 @@ public final class Connection {
         sendRequest(request);
     }
 
-    public void setLobby(Lobby lobbyController){
+    public void setLobby(Lobby lobbyController) {
         lobby = lobbyController;
     }
 
@@ -161,7 +161,7 @@ public final class Connection {
         return Optional.empty();
     }
 
-    public void leaveRoom(String roomName){
+    public void leaveRoom(String roomName) {
         Request request = new Request();
         request.roomName = roomName;
         request.nick = nick;
@@ -200,13 +200,27 @@ public final class Connection {
                 System.out.println(response.toString());
                 Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
                 break;
+            case USER_LEFT_ROOM:
+                System.out.println(response.toString());
+                Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
             case ROOM_CREATED:
                 System.out.println(response.toString());
+                List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                rooms.clear();
+                rooms.addAll(updateRooms);
                 Platform.runLater(() -> lobby.updateServerList());
                 break;
             case GAME_STARTED:
+                System.out.println(response.toString());
                 this.howLongIsTheWord = response.howLongIsTheWord;
                 Platform.runLater(() -> openGame(response.roomName));
+                break;
+            case BLOCK_ROOM:
+                System.out.println(response.toString());
+                updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                rooms.clear();
+                rooms.addAll(updateRooms);
+                Platform.runLater(() -> lobby.updateServerList());
                 break;
             case LETTER_RECEIVED:
                 this.letterPositions = response.letterPositions;

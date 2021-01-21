@@ -2,6 +2,7 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
@@ -35,5 +36,18 @@ public class HostRoom {
 
     public void leaveRoom(ActionEvent event) {
         Connection.getInstance().leaveRoom(roomInfo.getText());
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+
+            Stage tempStage = (Stage) roomInfo.getScene().getWindow();
+            tempStage.close();
+
+            Lobby lobbyController = fxmlLoader.getController();
+            lobbyController.initData(root, stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
