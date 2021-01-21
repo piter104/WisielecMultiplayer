@@ -191,12 +191,11 @@ public final class Connection {
                 break;
             case USER_JOINED_ROOM:
                 System.out.println(response.toString());
-
                 Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
                 break;
             case ROOM_CREATED:
                 System.out.println(response.toString());
-                Platform.runLater(() -> lobby.updateServerList((ListView<String>) rooms));
+                Platform.runLater(() -> lobby.updateServerList());
                 break;
             case GAME_STARTED:
                 this.howLongIsTheWord = response.howLongIsTheWord;

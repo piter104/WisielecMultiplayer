@@ -36,7 +36,7 @@ public class Lobby {
         lobbyStage.show();
     }
 
-    public void updateServerList(ListView<String> serverList) {
+    public void updateServerList() {
         serverList.setItems(Connection.getInstance().getRooms());
     }
 
