@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controller.Game;
 import controller.HostRoom;
+import controller.Lobby;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -47,6 +48,7 @@ public final class Connection {
     private ObservableList<String> rooms = FXCollections.observableArrayList();
     private Optional<Room> chosenRoom;
     private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
+    private Lobby lobby;
     private List<Integer> letterPositions;
     Map<String, Integer> mistakesCounter;
     Alert alertLose = new Alert(Alert.AlertType.INFORMATION);
@@ -109,11 +111,23 @@ public final class Connection {
         sendRequest(request);
     }
 
+    public void setLobby(Lobby lobbyController){
+        lobby = lobbyController;
+    }
+
     public void joinRoom(String roomName) {
         Request request = new Request();
         request.roomName = roomName;
         request.nick = nick;
         request.type = Request.RequestType.JOIN_ROOM;
+        sendRequest(request);
+    }
+
+    public void createRoom(String roomName) {
+        Request request = new Request();
+        request.roomName = roomName;
+        request.nick = nick;
+        request.type = Request.RequestType.CREATE_ROOM;
         sendRequest(request);
     }
 
@@ -179,6 +193,10 @@ public final class Connection {
                 System.out.println(response.toString());
 
                 Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
+                break;
+            case ROOM_CREATED:
+                System.out.println(response.toString());
+                Platform.runLater(() -> lobby.updateServerList((ListView<String>) rooms));
                 break;
             case GAME_STARTED:
                 this.howLongIsTheWord = response.howLongIsTheWord;

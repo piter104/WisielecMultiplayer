@@ -19,6 +19,7 @@ public class Request {
 
     public enum RequestType {
         JOIN_ROOM,
+        CREATE_ROOM,
         START_GAME,
         SEND_LETTER,
         LOGIN

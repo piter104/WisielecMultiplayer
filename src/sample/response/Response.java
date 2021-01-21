@@ -40,6 +40,7 @@ public class Response {
     public enum ResponseType {
         USER_AUTHENTICATED,
         USER_JOINED_ROOM,
+        ROOM_CREATED,
         GAME_STARTED,
         SOMEBODY_GUESSED_WRONG,
         LETTER_RECEIVED,

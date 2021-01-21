@@ -20,6 +20,7 @@ public class HostRoom {
     public ListView<String> players;
 
 
+
     public void initData(Parent root, Stage stage, String serverName) {
         hostRoomStage = stage;
         roomInfo.setText(serverName);
@@ -30,5 +31,9 @@ public class HostRoom {
 
     public void pressButton(ActionEvent event) {
         Connection.getInstance().startGame(roomInfo.getText());
+    }
+
+    public void leaveRoom(ActionEvent event) {
+        //Connection.getInstance().leaveRoom(roomInfo.getText());
     }
 }
