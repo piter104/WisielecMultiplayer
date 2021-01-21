@@ -161,6 +161,13 @@ public final class Connection {
         return Optional.empty();
     }
 
+    public void leaveRoom(String roomName){
+        Request request = new Request();
+        request.roomName = roomName;
+        request.nick = nick;
+        request.type = Request.RequestType.LEAVE_ROOM;
+        sendRequest(request);
+    }
 
     public void startGame(String roomName) {
         Request request = new Request();

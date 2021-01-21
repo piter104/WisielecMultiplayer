@@ -34,6 +34,6 @@ public class HostRoom {
     }
 
     public void leaveRoom(ActionEvent event) {
-        //Connection.getInstance().leaveRoom(roomInfo.getText());
+        Connection.getInstance().leaveRoom(roomInfo.getText());
     }
 }
