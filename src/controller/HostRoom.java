@@ -39,13 +39,11 @@ public class HostRoom {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
             Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
 
             Stage tempStage = (Stage) roomInfo.getScene().getWindow();
-            tempStage.close();
 
             Lobby lobbyController = fxmlLoader.getController();
-            lobbyController.initData(root, stage);
+            lobbyController.initData(root, tempStage);
         } catch (Exception e) {
             e.printStackTrace();
         }

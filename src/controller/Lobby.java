@@ -47,14 +47,13 @@ public class Lobby {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/HostRoom.fxml"));
                 Parent root = fxmlLoader.load();
-                Stage stage = new Stage();
 
                 Connection.getInstance().createRoom(newRoom.getText());
 
                 Stage tempStage = (Stage) serverList.getScene().getWindow();
-                tempStage.close();
+
                 HostRoom hostRoomController = fxmlLoader.getController();
-                hostRoomController.initData(root, stage, newRoom.getText());
+                hostRoomController.initData(root, tempStage, newRoom.getText());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -68,16 +67,15 @@ public class Lobby {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/HostRoom.fxml"));
                 Parent root = fxmlLoader.load();
-                Stage stage = new Stage();
 
                 String serverName = serverList.getSelectionModel().getSelectedItem();
 
                 Stage tempStage = (Stage) serverList.getScene().getWindow();
-                tempStage.close();
+
                 Connection.getInstance().joinRoom(serverName);
 
                 HostRoom hostRoomController = fxmlLoader.getController();
-                hostRoomController.initData(root, stage, serverName);
+                hostRoomController.initData(root, tempStage, serverName);
             } catch (Exception e) {
                 e.printStackTrace();
             }

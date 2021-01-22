@@ -23,13 +23,11 @@ public class Menu {
                 Connection.getInstance().setNick(nick.getText());
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
                 Parent root = fxmlLoader.load();
-                Stage stage = new Stage();
 
                 Stage tempStage = (Stage) emptyNick.getScene().getWindow();
-                tempStage.close();
 
                 Lobby lobbyController = fxmlLoader.getController();
-                lobbyController.initData(root, stage);
+                lobbyController.initData(root, tempStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }

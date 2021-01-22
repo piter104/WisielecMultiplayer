@@ -2,7 +2,9 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -51,6 +53,20 @@ public class Game {
         }
         lettersIn.clear();
         lettersOut.setText(letters);
+    }
+
+    public void endGame() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage tempStage = (Stage) password.getScene().getWindow();
+
+            Lobby lobbyController = fxmlLoader.getController();
+            lobbyController.initData(root, tempStage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

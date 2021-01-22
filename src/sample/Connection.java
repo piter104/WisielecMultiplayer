@@ -162,6 +162,7 @@ public final class Connection {
     }
 
     public void leaveRoom(String roomName) {
+        otherPlayersInRoom.clear();
         Request request = new Request();
         request.roomName = roomName;
         request.nick = nick;
@@ -231,11 +232,21 @@ public final class Connection {
                 break;
             case GAME_FINISHED:
                 Platform.runLater(() -> printWinAlert(response));
+                Platform.runLater(() -> gameController.endGame());
+                Platform.runLater(() -> clearAfterGame());
                 break;
             case YOU_LOST:
                 Platform.runLater(() -> printLoseAlert(response));
                 break;
         }
+    }
+
+    private void clearAfterGame(){
+        mistakesCounter.clear();
+        hangManList.clear();
+        headList.clear();
+        group.getChildren().clear();
+        otherPlayersInRoom.clear();
     }
 
     private void updateOthersHangmen(Response response) {
@@ -252,10 +263,6 @@ public final class Connection {
         return otherPlayersInRoom;
     }
 
-    @FXML
-    public ListView<String> players;
-
-
     Game gameController;
 
     //przesuniecie wisielcow
@@ -270,9 +277,8 @@ public final class Connection {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/GamePane.fxml"));
             Parent root = fxmlLoader.load();
 
-            Stage stage = new Stage();
-            Stage window = (Stage) HostRoom.hostRoomStage.getScene().getWindow();
-            window.close();
+            Stage tempStage = (Stage) HostRoom.hostRoomStage.getScene().getWindow();
+
             Integer howLongIsTheWord = Connection.getInstance().getHowLongIsTheWord();
             gameController = fxmlLoader.getController();
 
@@ -302,7 +308,7 @@ public final class Connection {
 
             gameController.getPassword().setText(repeater);
 
-            gameController.initData(group, stage, roomName);
+            gameController.initData(group, tempStage, roomName);
 
         } catch (Exception e) {
             e.printStackTrace();
