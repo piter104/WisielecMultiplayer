@@ -9,12 +9,10 @@ import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ListView;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -46,7 +44,6 @@ public final class Connection {
     private DataOutputStream outputStream;
     private ObjectMapper mapper;
     private ObservableList<String> rooms = FXCollections.observableArrayList();
-    private Optional<Room> chosenRoom;
     private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
     private Lobby lobby;
     private List<Integer> letterPositions;
@@ -189,39 +186,44 @@ public final class Connection {
 
 
     private void dispatchResponse(Response response) {
+        System.out.printf("Server responded with: %s \n", response.toString());
+
         switch (response.type) {
             case USER_AUTHENTICATED:
                 if (response.rooms != null) {
                     List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
-                    rooms.addAll(updateRooms);
-                    System.out.printf("Server responded with: %s \n", response.toString());
+                    rooms.setAll(updateRooms);
                 }
                 break;
             case USER_JOINED_ROOM:
-                System.out.println(response.toString());
                 Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
                 break;
             case USER_LEFT_ROOM:
-                System.out.println(response.toString());
-                Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
+                Platform.runLater(() -> {
+                    otherPlayersInRoom.setAll(response.otherPlayersInRoom);
+                    if (response.rooms != null) {
+                        List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                        rooms.setAll(updateRooms);
+                    }
+                });
+                break;
             case ROOM_CREATED:
-                System.out.println(response.toString());
                 List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
-                rooms.clear();
-                rooms.addAll(updateRooms);
-                Platform.runLater(() -> lobby.updateServerList());
+                Platform.runLater(() -> {
+                    rooms.setAll(updateRooms);
+                    lobby.updateServerList();
+                });
                 break;
             case GAME_STARTED:
-                System.out.println(response.toString());
                 this.howLongIsTheWord = response.howLongIsTheWord;
                 Platform.runLater(() -> openGame(response.roomName));
                 break;
             case BLOCK_ROOM:
-                System.out.println(response.toString());
                 updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
-                rooms.clear();
-                rooms.addAll(updateRooms);
-                Platform.runLater(() -> lobby.updateServerList());
+                Platform.runLater(() -> {
+                    rooms.setAll(updateRooms);
+                    lobby.updateServerList();
+                });
                 break;
             case LETTER_RECEIVED:
                 this.letterPositions = response.letterPositions;
@@ -231,9 +233,11 @@ public final class Connection {
                 Platform.runLater(() -> updateOthersHangmen(response));
                 break;
             case GAME_FINISHED:
-                Platform.runLater(() -> printWinAlert(response));
-                Platform.runLater(() -> gameController.endGame());
-                Platform.runLater(() -> clearAfterGame());
+                Platform.runLater(() -> {
+                    printWinAlert(response);
+                    gameController.endGame();
+                    clearAfterGame();
+                });
                 break;
             case YOU_LOST:
                 Platform.runLater(() -> printLoseAlert(response));
@@ -241,7 +245,7 @@ public final class Connection {
         }
     }
 
-    private void clearAfterGame(){
+    private void clearAfterGame() {
         mistakesCounter.clear();
         hangManList.clear();
         headList.clear();
