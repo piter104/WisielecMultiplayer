@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Connection;
 
 
@@ -24,6 +25,11 @@ public class HostRoom {
 
     public void initData(Parent root, Stage stage, String serverName) {
         hostRoomStage = stage;
+        hostRoomStage.setOnCloseRequest((WindowEvent we) -> {
+            Connection.getInstance().leaveRoom(roomInfo.getText());
+            Connection.getInstance().setThread(false);
+            Connection.getInstance().closeSocket();
+        });
         roomInfo.setText(serverName);
         players.setItems(Connection.getInstance().getOtherPlayersInRoom());
         stage.setScene(new Scene(root));

@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Connection;
 
 
@@ -32,6 +33,10 @@ public class Game {
 
     public void initData(Group group, Stage gameStage, String roomName) {
         stage = gameStage;
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            Connection.getInstance().setThread(false);
+            Connection.getInstance().closeSocket();
+        });
         this.group = group;
         this.roomName = roomName;
 

@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Connection;
 
 public class Menu {
@@ -25,6 +26,10 @@ public class Menu {
                 Parent root = fxmlLoader.load();
 
                 Stage tempStage = (Stage) emptyNick.getScene().getWindow();
+
+                tempStage.setOnCloseRequest((WindowEvent we) -> {
+                    Connection.getInstance().setThread(false);
+                });
 
                 Lobby lobbyController = fxmlLoader.getController();
                 lobbyController.initData(root, tempStage);

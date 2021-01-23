@@ -16,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.request.Request;
 import sample.response.Response;
 import sample.response.Room;
@@ -38,6 +39,7 @@ public final class Connection {
 
     private static Connection instance;
     private Socket clientSocket;
+    private Boolean thread = true;
     private String nick;
     private Integer howLongIsTheWord;
     private DataInputStream inputStream;
@@ -74,11 +76,19 @@ public final class Connection {
         System.out.println("Connection established");
 
         Thread responseReader = new Thread(() -> {
-            while (true) {
+            while (thread) {
                 readMessage().ifPresent(this::dispatchResponse);
             }
         });
         responseReader.start();
+    }
+
+    public void closeSocket(){
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Connection getInstance() {
@@ -90,6 +100,10 @@ public final class Connection {
             }
         }
         return instance;
+    }
+
+    public void setThread(Boolean thread) {
+        this.thread = thread;
     }
 
     public ObservableList<String> getRooms() {
@@ -260,7 +274,6 @@ public final class Connection {
             if (headList.get(i) != hangManList.get(i).getCircle())
                 group.getChildren().add(hangManList.get(i).getCircle());
         }
-        //gameController.updateMistakesNumber(number);
     }
 
     public ObservableList<String> getOtherPlayersInRoom() {

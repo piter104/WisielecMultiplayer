@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Connection;
 
 public class Lobby {
@@ -30,6 +31,10 @@ public class Lobby {
 
     public void initData(Parent root, Stage stage) {
         this.lobbyStage = stage;
+        lobbyStage.setOnCloseRequest((WindowEvent we) -> {
+            Connection.getInstance().setThread(false);
+            Connection.getInstance().closeSocket();
+        });
         Connection.getInstance().setLobby(this);
         serverList.setItems(Connection.getInstance().getRooms());
         lobbyStage.setScene(new Scene(root));
