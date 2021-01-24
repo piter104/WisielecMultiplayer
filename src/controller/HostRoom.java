@@ -25,6 +25,7 @@ public class HostRoom {
 
     public void initData(Parent root, Stage stage, String serverName) {
         hostRoomStage = stage;
+        hostRoomStage.setResizable(false);
         hostRoomStage.setOnCloseRequest((WindowEvent we) -> {
             Connection.getInstance().leaveRoom(roomInfo.getText());
             Connection.getInstance().setThread(false);

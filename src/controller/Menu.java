@@ -27,10 +27,6 @@ public class Menu {
 
                 Stage tempStage = (Stage) emptyNick.getScene().getWindow();
 
-                tempStage.setOnCloseRequest((WindowEvent we) -> {
-                    Connection.getInstance().setThread(false);
-                });
-
                 Lobby lobbyController = fxmlLoader.getController();
                 lobbyController.initData(root, tempStage);
             } catch (Exception e) {

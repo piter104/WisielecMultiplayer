@@ -31,6 +31,7 @@ public class Lobby {
 
     public void initData(Parent root, Stage stage) {
         this.lobbyStage = stage;
+        lobbyStage.setResizable(false);
         lobbyStage.setOnCloseRequest((WindowEvent we) -> {
             Connection.getInstance().setThread(false);
             Connection.getInstance().closeSocket();

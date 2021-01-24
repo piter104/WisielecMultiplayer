@@ -49,6 +49,7 @@ public final class Connection {
     private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
     private Lobby lobby;
     private List<Integer> letterPositions;
+    private String hostNick;
     Map<String, Integer> mistakesCounter;
     Alert alertLose = new Alert(Alert.AlertType.INFORMATION);
     Alert alertWin = new Alert(Alert.AlertType.INFORMATION);
@@ -83,7 +84,7 @@ public final class Connection {
         responseReader.start();
     }
 
-    public void closeSocket(){
+    public void closeSocket() {
         try {
             clientSocket.close();
         } catch (IOException e) {
@@ -104,6 +105,14 @@ public final class Connection {
 
     public void setThread(Boolean thread) {
         this.thread = thread;
+    }
+
+    public String getHostNick() {
+        return hostNick;
+    }
+
+    public void setHostNick(String hostNick) {
+        this.hostNick = hostNick;
     }
 
     public ObservableList<String> getRooms() {
@@ -135,6 +144,7 @@ public final class Connection {
     }
 
     public void createRoom(String roomName) {
+        setHostNick(nick);
         Request request = new Request();
         request.roomName = roomName;
         request.nick = nick;
@@ -174,10 +184,19 @@ public final class Connection {
 
     public void leaveRoom(String roomName) {
         otherPlayersInRoom.clear();
+        setHostNick("");
         Request request = new Request();
         request.roomName = roomName;
         request.nick = nick;
         request.type = Request.RequestType.LEAVE_ROOM;
+        sendRequest(request);
+    }
+
+    public void leaveGame(String roomName) {
+        Request request = new Request();
+        request.roomName = roomName;
+        request.nick = nick;
+        request.type = Request.RequestType.LEAVE_GAME;
         sendRequest(request);
     }
 
@@ -221,6 +240,8 @@ public final class Connection {
                     }
                 });
                 break;
+            case USER_LEFT_GAME:
+                break;
             case ROOM_CREATED:
                 List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
                 Platform.runLater(() -> {
@@ -260,11 +281,14 @@ public final class Connection {
     }
 
     private void clearAfterGame() {
-        mistakesCounter.clear();
-        hangManList.clear();
-        headList.clear();
-        group.getChildren().clear();
-        otherPlayersInRoom.clear();
+        try {
+            mistakesCounter.clear();
+        } catch (Exception e) {
+        }
+            hangManList.clear();
+            headList.clear();
+            group.getChildren().clear();
+            otherPlayersInRoom.clear();
     }
 
     private void updateOthersHangmen(Response response) {

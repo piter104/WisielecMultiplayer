@@ -41,6 +41,7 @@ public class Response {
         USER_AUTHENTICATED,
         USER_JOINED_ROOM,
         USER_LEFT_ROOM,
+        USER_LEFT_GAME,
         ROOM_CREATED,
         GAME_STARTED,
         BLOCK_ROOM,

@@ -33,7 +33,9 @@ public class Game {
 
     public void initData(Group group, Stage gameStage, String roomName) {
         stage = gameStage;
+        stage.setResizable(false);
         stage.setOnCloseRequest((WindowEvent we) -> {
+            Connection.getInstance().leaveGame(roomName);
             Connection.getInstance().setThread(false);
             Connection.getInstance().closeSocket();
         });
