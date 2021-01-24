@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -21,6 +22,11 @@ public class HostRoom {
     @FXML
     public ListView<String> players;
 
+    @FXML
+    public Button remove;
+
+    @FXML
+    public Text error;
 
 
     public void initData(Parent root, Stage stage, String serverName) {
@@ -31,6 +37,7 @@ public class HostRoom {
             Connection.getInstance().setThread(false);
             Connection.getInstance().closeSocket();
         });
+        Connection.getInstance().setHostRoom(this);
         roomInfo.setText(serverName);
         players.setItems(Connection.getInstance().getOtherPlayersInRoom());
         stage.setScene(new Scene(root));
@@ -54,5 +61,39 @@ public class HostRoom {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void removeGuest(ActionEvent event) {
+        if (players.getSelectionModel().getSelectedItem().isEmpty()) {
+            error.setText("Nie wybrałeś użytkownika!");
+        } else {
+            if (Connection.getInstance().getHostNick().equals(Connection.getInstance().getNick()))
+                if (Connection.getInstance().getNick() != players.getSelectionModel().getSelectedItem())
+                    try {
+                        String clientName = players.getSelectionModel().getSelectedItem();
+                        Connection.getInstance().removeUser(roomInfo.getText(), clientName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                else
+                    error.setText("Nie możesz wyrzucić hosta!");
+            else
+                error.setText("Nie jesteś hostem!");
+        }
+    }
+
+    public void leaveRoom() {
+        if (!Connection.getInstance().getOtherPlayersInRoom().contains(Connection.getInstance().getNick()))
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
+                Parent root = fxmlLoader.load();
+
+                Stage tempStage = (Stage) players.getScene().getWindow();
+                Connection.getInstance().getOtherPlayersInRoom().clear();
+                Lobby lobbyController = fxmlLoader.getController();
+                lobbyController.initData(root, tempStage);
+            } catch (Exception e) {
+
+            }
     }
 }

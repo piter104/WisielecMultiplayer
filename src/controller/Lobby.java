@@ -73,7 +73,7 @@ public class Lobby {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/HostRoom.fxml"));
                 Parent root = fxmlLoader.load();
-
+                System.out.println(serverList.getSelectionModel().getSelectedItem());
                 String serverName = serverList.getSelectionModel().getSelectedItem();
 
                 Stage tempStage = (Stage) serverList.getScene().getWindow();

@@ -17,6 +17,7 @@ public class Response {
     public String winner;
     public String loser;
     public String roomName;
+    public String word;
 
     @Override
     public String toString() {
@@ -34,6 +35,7 @@ public class Response {
                 ", winner=" + winner +
                 ", loser=" + loser +
                 ", roomName=" + roomName +
+                ", word=" + word +
                 '}';
     }
 
@@ -48,6 +50,7 @@ public class Response {
         SOMEBODY_GUESSED_WRONG,
         LETTER_RECEIVED,
         GAME_FINISHED,
+        GAME_LOST,
         YOU_LOST;
     }
 }

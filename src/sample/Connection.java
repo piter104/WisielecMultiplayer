@@ -48,6 +48,7 @@ public final class Connection {
     private ObservableList<String> rooms = FXCollections.observableArrayList();
     private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
     private Lobby lobby;
+    private HostRoom hostRoom;
     private List<Integer> letterPositions;
     private String hostNick;
     Map<String, Integer> mistakesCounter;
@@ -135,6 +136,14 @@ public final class Connection {
         lobby = lobbyController;
     }
 
+    public void setHostRoom(HostRoom hostRoom) {
+        this.hostRoom = hostRoom;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
     public void joinRoom(String roomName) {
         Request request = new Request();
         request.roomName = roomName;
@@ -192,6 +201,14 @@ public final class Connection {
         sendRequest(request);
     }
 
+    public void removeUser(String roomName, String userName) {
+        Request request = new Request();
+        request.roomName = roomName;
+        request.nick = userName;
+        request.type = Request.RequestType.LEAVE_ROOM;
+        sendRequest(request);
+    }
+
     public void leaveGame(String roomName) {
         Request request = new Request();
         request.roomName = roomName;
@@ -230,14 +247,17 @@ public final class Connection {
                 break;
             case USER_JOINED_ROOM:
                 Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
+                setHostNick(response.otherPlayersInRoom.get(0));
                 break;
             case USER_LEFT_ROOM:
                 Platform.runLater(() -> {
+                    setHostNick(response.otherPlayersInRoom.get(0));
                     otherPlayersInRoom.setAll(response.otherPlayersInRoom);
                     if (response.rooms != null) {
                         List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
                         rooms.setAll(updateRooms);
                     }
+                    hostRoom.leaveRoom();
                 });
                 break;
             case USER_LEFT_GAME:
@@ -269,7 +289,14 @@ public final class Connection {
                 break;
             case GAME_FINISHED:
                 Platform.runLater(() -> {
-                    printWinAlert(response);
+                    printEndWinAlert(response);
+                    gameController.endGame();
+                    clearAfterGame();
+                });
+                break;
+            case GAME_LOST:
+                Platform.runLater(() -> {
+                    printEndLostAlert(response);
                     gameController.endGame();
                     clearAfterGame();
                 });
@@ -372,10 +399,17 @@ public final class Connection {
         }
     }
 
-    private void printWinAlert(Response response) {
+    private void printEndWinAlert(Response response) {
         alertWin.setTitle("Koniec Gry");
         alertWin.setHeaderText(null);
-        alertWin.setContentText("Wygrał użytkownik: " + response.winner);
+        alertWin.setContentText("Wygrał użytkownik: " + response.winner + " Hasło: " + response.word);
+        alertWin.showAndWait();
+    }
+
+    private void printEndLostAlert(Response response) {
+        alertWin.setTitle("Koniec Gry");
+        alertWin.setHeaderText(null);
+        alertWin.setContentText("Nikt nie wygrał! Hasło:  " + response.word);
         alertWin.showAndWait();
     }
 

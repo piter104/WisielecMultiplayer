@@ -20,9 +20,6 @@ public class Main extends Application {
         Parent start = FXMLLoader.load(getClass().getResource("/fxmlFiles/Menu.fxml"));
         stg.setTitle("Wisielec");
         stg.setResizable(false);
-        stg.setOnCloseRequest((WindowEvent we) -> {
-            Connection.getInstance().setThread(false);
-        });
         primaryStage.setScene(new Scene(start));
         primaryStage.show();
     }
