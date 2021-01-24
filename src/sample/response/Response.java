@@ -51,6 +51,7 @@ public class Response {
         LETTER_RECEIVED,
         GAME_FINISHED,
         GAME_LOST,
-        YOU_LOST;
+        YOU_LOST,
+        SERVERS_INFO;
     }
 }

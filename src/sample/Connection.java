@@ -16,7 +16,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import sample.request.Request;
 import sample.response.Response;
 import sample.response.Room;
@@ -241,20 +240,20 @@ public final class Connection {
         switch (response.type) {
             case USER_AUTHENTICATED:
                 if (response.rooms != null) {
-                    List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                    List<String> updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
                     rooms.setAll(updateRooms);
                 }
                 break;
             case USER_JOINED_ROOM:
                 Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
-                setHostNick(response.otherPlayersInRoom.get(0));
+                response.otherPlayersInRoom.stream().findFirst().ifPresent(this::setHostNick);
                 break;
             case USER_LEFT_ROOM:
                 Platform.runLater(() -> {
-                    setHostNick(response.otherPlayersInRoom.get(0));
+                    response.otherPlayersInRoom.stream().findFirst().ifPresent(this::setHostNick);
                     otherPlayersInRoom.setAll(response.otherPlayersInRoom);
                     if (response.rooms != null) {
-                        List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                        List<String> updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
                         rooms.setAll(updateRooms);
                     }
                     hostRoom.leaveRoom();
@@ -263,7 +262,14 @@ public final class Connection {
             case USER_LEFT_GAME:
                 break;
             case ROOM_CREATED:
-                List<String> updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                List<String> updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
+                Platform.runLater(() -> {
+                    rooms.setAll(updateRooms);
+                    lobby.updateServerList();
+                });
+                break;
+            case SERVERS_INFO:
+                updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
                 Platform.runLater(() -> {
                     rooms.setAll(updateRooms);
                     lobby.updateServerList();
@@ -274,7 +280,7 @@ public final class Connection {
                 Platform.runLater(() -> openGame(response.roomName));
                 break;
             case BLOCK_ROOM:
-                updateRooms = response.rooms.stream().map(Room::getRoomName).collect(Collectors.toList());
+                updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
                 Platform.runLater(() -> {
                     rooms.setAll(updateRooms);
                     lobby.updateServerList();
@@ -312,10 +318,10 @@ public final class Connection {
             mistakesCounter.clear();
         } catch (Exception e) {
         }
-            hangManList.clear();
-            headList.clear();
-            group.getChildren().clear();
-            otherPlayersInRoom.clear();
+        hangManList.clear();
+        headList.clear();
+        group.getChildren().clear();
+        otherPlayersInRoom.clear();
     }
 
     private void updateOthersHangmen(Response response) {
