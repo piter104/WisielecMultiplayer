@@ -356,9 +356,9 @@ public final class Connection {
 
             for (int i = 0; i < playerNumber; i++) {
                 textList.add(new Text());
-                hangManList.add(new Drawing(xMove * i, yMove));
+                hangManList.add(new Drawing(4 * xMove / playerNumber * i, yMove));
                 textList.get(i).setText(otherPlayersInRoom.get(i));
-                textList.get(i).setX(hangManList.get(i).getX() + xMove * i);
+                textList.get(i).setX(hangManList.get(i).getX() + 4 * xMove / playerNumber * i);
                 textList.get(i).setY(hangManList.get(i).getY() + yMove + 40);
             }
 
