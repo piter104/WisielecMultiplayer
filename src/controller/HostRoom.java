@@ -64,14 +64,16 @@ public class HostRoom {
     }
 
     public void removeGuest(ActionEvent event) {
-        if (players.getSelectionModel().getSelectedItem().isEmpty()) {
+        System.out.println(players.getSelectionModel().getSelectedItem());
+        if (players.getSelectionModel().getSelectedItem() == null) {
             error.setText("Nie wybrałeś użytkownika!");
         } else {
             if (Connection.getInstance().getHostNick().equals(Connection.getInstance().getNick()))
-                if (Connection.getInstance().getNick() != players.getSelectionModel().getSelectedItem())
+                if (!Connection.getInstance().getNick().equals(players.getSelectionModel().getSelectedItem()))
                     try {
                         String clientName = players.getSelectionModel().getSelectedItem();
                         Connection.getInstance().removeUser(roomInfo.getText(), clientName);
+                        error.setText("");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

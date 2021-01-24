@@ -67,7 +67,7 @@ public class Lobby {
     }
 
     public void chooseServerButton(ActionEvent event) {
-        if (serverList.getSelectionModel().getSelectedItem().isEmpty()) {
+        if (serverList.getSelectionModel().getSelectedItem() == null) {
             noRoomChosen.setText("Nie wybrałeś pokoju!");
         } else {
             try {
