@@ -29,6 +29,8 @@ public class Lobby {
     @FXML
     private Text noRoomChosen;
 
+    private String server;
+
     public void initData(Parent root, Stage stage) {
         this.lobbyStage = stage;
         lobbyStage.setResizable(false);
@@ -48,22 +50,31 @@ public class Lobby {
     }
 
     public void pressButton(ActionEvent event) {
+        Connection.getInstance().setLobby(this);
         if (newRoom.getText().isEmpty()) {
             emptyWarning.setText("Nie podałeś nazwy pokoju!");
         } else {
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/HostRoom.fxml"));
-                Parent root = fxmlLoader.load();
+            server = newRoom.getText();
+            Connection.getInstance().createRoom(server);
+        }
+    }
 
-                Connection.getInstance().createRoom(newRoom.getText());
+    public void nameError()
+    {
+        emptyWarning.setText("Nazwa już istnieje!");
+    }
 
-                Stage tempStage = (Stage) serverList.getScene().getWindow();
+    public void enterHostRoom() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/HostRoom.fxml"));
+            Parent root = fxmlLoader.load();
 
-                HostRoom hostRoomController = fxmlLoader.getController();
-                hostRoomController.initData(root, tempStage, newRoom.getText());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            //Stage tempStage = (Stage) serverList.getScene().getWindow();
+
+            HostRoom hostRoomController = fxmlLoader.getController();
+            hostRoomController.initData(root, lobbyStage, newRoom.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

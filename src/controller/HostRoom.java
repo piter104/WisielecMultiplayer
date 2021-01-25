@@ -30,6 +30,7 @@ public class HostRoom {
 
 
     public void initData(Parent root, Stage stage, String serverName) {
+        Connection.getInstance().setHostRoom(this);
         hostRoomStage = stage;
         hostRoomStage.setResizable(false);
         hostRoomStage.setOnCloseRequest((WindowEvent we) -> {
@@ -37,7 +38,6 @@ public class HostRoom {
             Connection.getInstance().setThread(false);
             Connection.getInstance().closeSocket();
         });
-        Connection.getInstance().setHostRoom(this);
         roomInfo.setText(serverName);
         players.setItems(Connection.getInstance().getOtherPlayersInRoom());
         stage.setScene(new Scene(root));
@@ -46,6 +46,10 @@ public class HostRoom {
 
     public void pressButton(ActionEvent event) {
         Connection.getInstance().startGame(roomInfo.getText());
+    }
+
+    public void hostMessage(){
+        error.setText("Jesteś hostem");
     }
 
     public void leaveRoom(ActionEvent event) {

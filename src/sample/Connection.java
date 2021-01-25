@@ -261,16 +261,28 @@ public final class Connection {
                     List<String> updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
                     rooms.setAll(updateRooms);
                 }
-                if(response.nameOk)
+                if (response.nameOk)
                     Platform.runLater(() -> menu.enterLobby());
                 else {
                     Platform.runLater(() -> menu.nameError());
                     this.nick = "";
                 }
                 break;
-            case USER_JOINED_ROOM:
-                Platform.runLater(() -> otherPlayersInRoom.setAll(response.otherPlayersInRoom));
+            case USER_JOINED_CREATED_ROOM:
+                Platform.runLater(() -> {
+                    otherPlayersInRoom.setAll(response.otherPlayersInRoom);
+                    lobby.enterHostRoom();
+                });
                 response.otherPlayersInRoom.stream().findFirst().ifPresent(this::setHostNick);
+                Platform.runLater(() -> hostRoom.hostMessage());
+                break;
+            case USER_JOINED_ROOM:
+                Platform.runLater(() -> {
+                    otherPlayersInRoom.setAll(response.otherPlayersInRoom);
+                });
+                response.otherPlayersInRoom.stream().findFirst().ifPresent(this::setHostNick);
+                if (hostNick == nick)
+                    Platform.runLater(() -> hostRoom.hostMessage());
                 break;
             case USER_LEFT_ROOM:
                 Platform.runLater(() -> {
@@ -287,10 +299,16 @@ public final class Connection {
                 break;
             case ROOM_CREATED:
                 List<String> updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
-                Platform.runLater(() -> {
-                    rooms.setAll(updateRooms);
-                    lobby.updateServerList();
-                });
+                if (response.nameOk) {
+                    Platform.runLater(() -> {
+                        rooms.setAll(updateRooms);
+                        lobby.updateServerList();
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        lobby.nameError();
+                    });
+                }
                 break;
             case SERVERS_INFO:
                 updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
