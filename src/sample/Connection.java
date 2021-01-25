@@ -216,6 +216,21 @@ public final class Connection {
         sendRequest(request);
     }
 
+    public void leaveLobby() {
+        Request request = new Request();
+        request.nick = nick;
+        request.type = Request.RequestType.LEAVE_LOBBY;
+        sendRequest(request);
+    }
+
+    public void leaveHostRoom(String roomName) {
+        Request request = new Request();
+        request.roomName = roomName;
+        request.nick = nick;
+        request.type = Request.RequestType.LEAVE_HOSTROOM;
+        sendRequest(request);
+    }
+
     public void startGame(String roomName) {
         Request request = new Request();
         request.roomName = roomName;
@@ -408,14 +423,14 @@ public final class Connection {
     private void printEndWinAlert(Response response) {
         alertWin.setTitle("Koniec Gry");
         alertWin.setHeaderText(null);
-        alertWin.setContentText("Wygrał użytkownik: " + response.winner + " Hasło: " + response.word);
+        alertWin.setContentText("Wygrał użytkownik: " + response.winner + "\nHasło: " + response.word);
         alertWin.showAndWait();
     }
 
     private void printEndLostAlert(Response response) {
         alertWin.setTitle("Koniec Gry");
         alertWin.setHeaderText(null);
-        alertWin.setContentText("Nikt nie wygrał! Hasło:  " + response.word);
+        alertWin.setContentText("Nikt nie wygrał! \n Hasło:  " + response.word);
         alertWin.showAndWait();
     }
 

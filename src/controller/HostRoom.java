@@ -33,7 +33,7 @@ public class HostRoom {
         hostRoomStage = stage;
         hostRoomStage.setResizable(false);
         hostRoomStage.setOnCloseRequest((WindowEvent we) -> {
-            Connection.getInstance().leaveRoom(roomInfo.getText());
+            Connection.getInstance().leaveHostRoom(roomInfo.getText());
             Connection.getInstance().setThread(false);
             Connection.getInstance().closeSocket();
         });
