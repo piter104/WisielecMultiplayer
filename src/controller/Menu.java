@@ -20,18 +20,31 @@ public class Menu {
         if (nick.getText().length() == 0) {
             emptyNick.setText("Nie podałeś nicku");
         } else {
-            try {
-                Connection.getInstance().setNick(nick.getText());
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
-                Parent root = fxmlLoader.load();
+            Connection.getInstance().setNick(nick.getText(), this);
+        }
+    }
 
-                Stage tempStage = (Stage) emptyNick.getScene().getWindow();
+    public void nameError() {
+        Stage stage = (Stage) emptyNick.getScene().getWindow();
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            Connection.getInstance().leaveLobby();
+            Connection.getInstance().setThread(false);
+            Connection.getInstance().closeSocket();
+        });
+            emptyNick.setText("Nazwa użytkownika już istnieje!");
+    }
 
-                Lobby lobbyController = fxmlLoader.getController();
-                lobbyController.initData(root, tempStage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public void enterLobby() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage tempStage = (Stage) emptyNick.getScene().getWindow();
+
+            Lobby lobbyController = fxmlLoader.getController();
+            lobbyController.initData(root, tempStage);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

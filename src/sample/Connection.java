@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controller.Game;
 import controller.HostRoom;
 import controller.Lobby;
+import controller.Menu;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -46,6 +47,7 @@ public final class Connection {
     private ObjectMapper mapper;
     private ObservableList<String> rooms = FXCollections.observableArrayList();
     private ObservableList<String> otherPlayersInRoom = FXCollections.observableArrayList();
+    private Menu menu;
     private Lobby lobby;
     private HostRoom hostRoom;
     private List<Integer> letterPositions;
@@ -123,8 +125,9 @@ public final class Connection {
         return howLongIsTheWord;
     }
 
-    public void setNick(String text) {
-        nick = text;
+    public void setNick(String text, Menu menu) {
+        this.nick = text;
+        this.menu = menu;
         Request request = new Request();
         request.nick = text;
         request.type = Request.RequestType.LOGIN;
@@ -257,6 +260,12 @@ public final class Connection {
                 if (response.rooms != null) {
                     List<String> updateRooms = response.rooms.stream().filter(room -> !room.getMaxPlayers()).map(Room::getRoomName).collect(Collectors.toList());
                     rooms.setAll(updateRooms);
+                }
+                if(response.nameOk)
+                    Platform.runLater(() -> menu.enterLobby());
+                else {
+                    Platform.runLater(() -> menu.nameError());
+                    this.nick = "";
                 }
                 break;
             case USER_JOINED_ROOM:

@@ -12,6 +12,7 @@ public class Response {
     public List<String> otherPlayersInRoom;
     public Integer howLongIsTheWord;
     public Boolean gameFinished;
+    public Boolean nameOk;
     public String letterGuessed;
     public Map<String, Integer> userWrongCounterMap;
     public String winner;
@@ -36,6 +37,7 @@ public class Response {
                 ", loser=" + loser +
                 ", roomName=" + roomName +
                 ", word=" + word +
+                ", nameOk=" + nameOk +
                 '}';
     }
 
