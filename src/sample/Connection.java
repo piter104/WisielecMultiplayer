@@ -344,7 +344,12 @@ public final class Connection {
                 break;
             case GAME_LOST:
                 Platform.runLater(() -> {
-                    printEndLostAlert(response);
+                    if(response.timeRunOut) {
+                        printEndTimeRunOutAlert(response);
+                    }
+                    else {
+                        printEndLostAlert(response);
+                    }
                     gameController.endGame();
                     clearAfterGame();
                 });
@@ -467,4 +472,12 @@ public final class Connection {
         alertLose.setContentText("Przegrałeś: " + response.loser);
         alertLose.showAndWait();
     }
+
+    private void  printEndTimeRunOutAlert(Response response) {
+        alertWin.setTitle("Koniec Gry");
+        alertWin.setHeaderText(null);
+        alertWin.setContentText("Skończył się czas! \n Hasło:  " + response.word);
+        alertWin.showAndWait();
+    }
+
 }
