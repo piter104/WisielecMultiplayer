@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,7 +40,12 @@ public final class Connection {
 
     private static Connection instance;
     private Socket clientSocket;
-    private Boolean thread = true;
+
+    public AtomicBoolean getThread() {
+        return thread;
+    }
+
+    AtomicBoolean thread = new AtomicBoolean(true);
     private String nick;
     private Integer howLongIsTheWord;
     private DataInputStream inputStream;
@@ -72,6 +78,7 @@ public final class Connection {
             outputStream = new DataOutputStream(clientSocket.getOutputStream());
         } catch (IOException ex) {
             clientSocket.close();
+
         } catch (Exception e) {
 
         }
@@ -79,7 +86,7 @@ public final class Connection {
         System.out.println("Connection established");
 
         Thread responseReader = new Thread(() -> {
-            while (thread) {
+            while (thread.get()) {
                 readMessage().ifPresent(this::dispatchResponse);
             }
         });
@@ -105,9 +112,7 @@ public final class Connection {
         return instance;
     }
 
-    public void setThread(Boolean thread) {
-        this.thread = thread;
-    }
+
 
     public String getHostNick() {
         return hostNick;
@@ -344,10 +349,9 @@ public final class Connection {
                 break;
             case GAME_LOST:
                 Platform.runLater(() -> {
-                    if(response.timeRunOut) {
+                    if (response.timeRunOut) {
                         printEndTimeRunOutAlert(response);
-                    }
-                    else {
+                    } else {
                         printEndLostAlert(response);
                     }
                     gameController.endGame();
@@ -374,9 +378,13 @@ public final class Connection {
     private void updateOthersHangmen(Response response) {
         mistakesCounter = response.userWrongCounterMap;
         for (int i = 0; i < otherPlayersInRoom.size(); i++) {
-            hangManList.get(i).draw(response.userWrongCounterMap.get(otherPlayersInRoom.get(i)));
-            if (headList.get(i) != hangManList.get(i).getCircle())
-                group.getChildren().add(hangManList.get(i).getCircle());
+            Integer integer = response.userWrongCounterMap.get(otherPlayersInRoom.get(i));
+            if (integer != null) {
+                hangManList.get(i).draw(integer);
+                if (headList.get(i) != hangManList.get(i).getCircle())
+                    group.getChildren().add(hangManList.get(i).getCircle());
+            }
+
         }
     }
 
@@ -473,7 +481,7 @@ public final class Connection {
         alertLose.showAndWait();
     }
 
-    private void  printEndTimeRunOutAlert(Response response) {
+    private void printEndTimeRunOutAlert(Response response) {
         alertWin.setTitle("Koniec Gry");
         alertWin.setHeaderText(null);
         alertWin.setContentText("Skończył się czas! \n Hasło:  " + response.word);

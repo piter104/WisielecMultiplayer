@@ -28,7 +28,7 @@ public class Menu {
         Stage stage = (Stage) emptyNick.getScene().getWindow();
         stage.setOnCloseRequest((WindowEvent we) -> {
             Connection.getInstance().leaveLobby();
-            Connection.getInstance().setThread(false);
+            Connection.getInstance().getThread().set(false);
             Connection.getInstance().closeSocket();
         });
             emptyNick.setText("Nazwa użytkownika już istnieje!");

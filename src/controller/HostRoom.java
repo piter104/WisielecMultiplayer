@@ -35,7 +35,7 @@ public class HostRoom {
         hostRoomStage.setResizable(false);
         hostRoomStage.setOnCloseRequest((WindowEvent we) -> {
             Connection.getInstance().leaveHostRoom(roomInfo.getText());
-            Connection.getInstance().setThread(false);
+            Connection.getInstance().getThread().set(false);
             Connection.getInstance().closeSocket();
         });
         roomInfo.setText(serverName);

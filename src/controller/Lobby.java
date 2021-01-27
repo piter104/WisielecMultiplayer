@@ -36,7 +36,7 @@ public class Lobby {
         lobbyStage.setResizable(false);
         lobbyStage.setOnCloseRequest((WindowEvent we) -> {
             Connection.getInstance().leaveLobby();
-            Connection.getInstance().setThread(false);
+            Connection.getInstance().getThread().set(false);
             Connection.getInstance().closeSocket();
         });
         Connection.getInstance().setLobby(this);

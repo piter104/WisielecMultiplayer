@@ -36,7 +36,7 @@ public class Game {
         stage.setResizable(false);
         stage.setOnCloseRequest((WindowEvent we) -> {
             Connection.getInstance().leaveGame(roomName);
-            Connection.getInstance().setThread(false);
+            Connection.getInstance().getThread().set(false);
             Connection.getInstance().closeSocket();
         });
         this.group = group;
