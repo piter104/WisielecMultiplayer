@@ -281,7 +281,7 @@ public final class Connection {
                     otherPlayersInRoom.setAll(response.otherPlayersInRoom);
                 });
                 response.otherPlayersInRoom.stream().findFirst().ifPresent(this::setHostNick);
-                if (hostNick == nick)
+                if (hostNick.equals(nick))
                     Platform.runLater(() -> hostRoom.hostMessage());
                 break;
             case USER_LEFT_ROOM:
