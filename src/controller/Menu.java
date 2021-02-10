@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Connection;
 
 public class Menu {
@@ -19,22 +20,31 @@ public class Menu {
         if (nick.getText().length() == 0) {
             emptyNick.setText("Nie podałeś nicku");
         } else {
-            try {
-                Connection.getInstance().setNick(nick.getText());
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
-                Parent root = fxmlLoader.load();
-                Stage stage = new Stage();
+            Connection.getInstance().setNick(nick.getText(), this);
+        }
+    }
 
-                //Player player = new Player(2, nick.getText());
+    public void nameError() {
+        Stage stage = (Stage) emptyNick.getScene().getWindow();
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            Connection.getInstance().leaveLobby();
+            Connection.getInstance().getThread().set(false);
+            Connection.getInstance().closeSocket();
+        });
+            emptyNick.setText("Nazwa użytkownika już istnieje!");
+    }
 
-                Stage tempStage = (Stage) emptyNick.getScene().getWindow();
-                tempStage.close();
+    public void enterLobby() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
+            Parent root = fxmlLoader.load();
 
-                Lobby lobbyController = fxmlLoader.getController();
-                lobbyController.initData(root, stage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Stage tempStage = (Stage) emptyNick.getScene().getWindow();
+
+            Lobby lobbyController = fxmlLoader.getController();
+            lobbyController.initData(root, tempStage);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

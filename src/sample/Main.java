@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Main extends Application {
     public static Stage stg;
@@ -17,8 +18,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         stg = primaryStage;
         Parent start = FXMLLoader.load(getClass().getResource("/fxmlFiles/Menu.fxml"));
-        primaryStage.setTitle("Wisielec");
-
+        stg.setTitle("Wisielec");
+        stg.setResizable(false);
         primaryStage.setScene(new Scene(start));
         primaryStage.show();
     }

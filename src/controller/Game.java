@@ -1,80 +1,79 @@
 package controller;
 
-import javafx.animation.PathTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sample.Connection;
-import sample.Drawing;
-import sample.response.Response;
 
-import java.util.List;
 
 public class Game {
     @FXML
     private Text lettersOut;
     @FXML
     private TextField lettersIn;
+    @FXML
+    private Text password;
 
-    private int number = 0;
+    private String roomName;
+
     private String letters = "";
-    private final String word = "";
-    Circle circle;
+
+    Integer number = 0;
 
     Group group;
     Stage stage;
-    Drawing drawing = new Drawing();
-    PathTransition pathTransition = new PathTransition();
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
 
-    public void initData(Parent gameRoot, Stage gameStage) {
+    public void initData(Group group, Stage gameStage, String roomName) {
         stage = gameStage;
-        group = new Group(gameRoot);
-
-        alert.setTitle("Koniec Gry");
-        alert.setHeaderText(null);
-        alert.setContentText("Przegrałeś kolego");
-
-        pathTransition.setPath(drawing.getPath());
-        group.getChildren().add(drawing.getPath());
-        group.getChildren().add(drawing.getCircle());
-
-        // trzeba dopisać jeszcze kreski hasła
+        stage.setResizable(false);
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            Connection.getInstance().leaveGame(roomName);
+            Connection.getInstance().getThread().set(false);
+            Connection.getInstance().closeSocket();
+        });
+        this.group = group;
+        this.roomName = roomName;
 
         stage.setScene(new Scene(group));
         stage.show();
     }
 
-    public void enterLetter(ActionEvent event) {
-        if (lettersIn.getText().length() == 1) {
-            Response response = Connection.getInstance().guessLetter(lettersIn.getText());
-            letters = letters.isBlank() ? lettersIn.getText() : letters + ", " + lettersIn.getText();
-            List<Integer> letterPositions = response.letterPositions;
-            if (letterPositions.isEmpty()) {
-                if (number < 10) {
-                    drawing.draw(number);
-                    number++;
-                } else {
-                    alert.showAndWait();
-                }
-            } else {
-                //TODO dodać literkę na odpowiednich miejsach (wskasanych w letterPositions) na kreskach
-            }
+    public Text getPassword() {
+        return password;
+    }
 
-            if (response.gameFinished) {
-                //TODO ALERT WYGRAłes
-                alert.showAndWait();
+    public void enterLetter(ActionEvent event) {
+        if (number < 10) {
+            String guessedLetter = lettersIn.getText();
+            if (guessedLetter.length() == 1) {
+                letters = letters.isBlank() ? guessedLetter : letters + ", " + guessedLetter;
+                Connection.getInstance().guessLetter(guessedLetter, roomName);
             }
         }
         lettersIn.clear();
         lettersOut.setText(letters);
     }
+
+    public void endGame() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxmlFiles/Lobby.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage tempStage = (Stage) password.getScene().getWindow();
+
+            Lobby lobbyController = fxmlLoader.getController();
+            lobbyController.initData(root, tempStage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
